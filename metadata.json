@@ -1,0 +1,6 @@
+{
+  "name": "Honey Bees Pre-School, Daycare and Tuition centre",
+  "description": "A premium, high-conversion responsive website and school management portal for Honey Bees Pre-School, Daycare, & Tuition Centre, featuring multi-role dashboards and a smart AI parent-support chatbot.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
