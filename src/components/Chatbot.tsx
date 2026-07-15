@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Sparkles, HelpCircle, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { safeJson } from "../utils";
 
 interface ChatMessage {
   id: string;
@@ -57,8 +58,8 @@ export default function Chatbot() {
         body: JSON.stringify({ message: textToSend }),
       });
 
-      const data = await response.json();
-      if (response.ok && data.reply) {
+      const data = await safeJson(response);
+      if (!data.error && data.reply) {
         setMessages((prev) => [
           ...prev,
           {
@@ -72,7 +73,7 @@ export default function Chatbot() {
         throw new Error(data.error || "Failed reply");
       }
     } catch (error) {
-      console.error("Chatbot response error:", error);
+      console.warn("Chatbot response error gracefully handled:", error);
       // Reassuring fallback message
       setMessages((prev) => [
         ...prev,

@@ -6,8 +6,14 @@ export interface AdmissionApplication {
   phone: string;
   dob: string;
   program: string;
-  status: "Pending Review" | "Approved" | "Declined";
+  status: string; // e.g. "New" | "Contacted" | "Tour Scheduled" | "Enrolled" | "Approved" | "Declined" | "Pending Review"
   date: string;
+  gender?: string;
+  address?: string;
+  preferredStartDate?: string;
+  emergencyContact?: string;
+  previousSchool?: string;
+  specialNotes?: string;
 }
 
 export interface TourBooking {
@@ -17,7 +23,8 @@ export interface TourBooking {
   phone: string;
   date: string;
   time: string;
-  status: "Confirmed" | "Pending" | "Cancelled";
+  status: "Confirmed" | "Pending" | "Cancelled" | "Completed" | "New" | string;
+  visitors?: number;
 }
 
 export interface Enquiry {
@@ -123,6 +130,30 @@ export interface DatabaseState {
   blogs: BlogArticle[];
   gallery: GalleryPhoto[];
   testimonials: Testimonial[];
+  events?: UpcomingEvent[];
+  emails?: EmailLog[];
+}
+
+export interface EmailLog {
+  id: string;
+  timestamp: string;
+  formType: "Contact Inquiry" | "Admission Enrollment" | "School Tour Booking";
+  parentName: string;
+  email: string;
+  phone: string;
+  messageText: string;
+  details: string;
+  recipient: string;
+  status: "Simulated" | "Delivered" | "Failed";
+  logs: string[];
+}
+
+export interface UpcomingEvent {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  desc: string;
 }
 
 export interface Testimonial {

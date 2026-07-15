@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { Sparkles, Calendar, BadgeCheck, FileText, Send, ArrowRight, BookOpen, AlertCircle, PhoneCall } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { safeJson } from "../utils";
 
 interface AdmissionsSectionProps {
   onSuccess: () => void;
   prefilledProgram?: string;
   initialForm?: "admission" | "tour";
+  onGoToDashboard?: () => void;
 }
 
-export default function AdmissionsSection({ onSuccess, prefilledProgram = "Nursery", initialForm = "admission" }: AdmissionsSectionProps) {
+export default function AdmissionsSection({ onSuccess, prefilledProgram = "Nursery", initialForm = "admission", onGoToDashboard }: AdmissionsSectionProps) {
   const [activeForm, setActiveForm] = useState<"admission" | "tour">(initialForm);
 
   // Hook to update activeForm if initialForm prop changes
@@ -23,6 +25,12 @@ export default function AdmissionsSection({ onSuccess, prefilledProgram = "Nurse
   const [phone, setPhone] = useState("");
   const [dob, setDob] = useState("");
   const [program, setProgram] = useState(prefilledProgram);
+  const [gender, setGender] = useState("Male");
+  const [address, setAddress] = useState("");
+  const [preferredStartDate, setPreferredStartDate] = useState("");
+  const [emergencyContact, setEmergencyContact] = useState("");
+  const [previousSchool, setPreviousSchool] = useState("");
+  const [specialNotes, setSpecialNotes] = useState("");
   const [admSuccessMsg, setAdmSuccessMsg] = useState("");
 
   // Tour Form State
@@ -31,6 +39,7 @@ export default function AdmissionsSection({ onSuccess, prefilledProgram = "Nurse
   const [tourPhone, setTourPhone] = useState("");
   const [tourDate, setTourDate] = useState("");
   const [tourTime, setTourTime] = useState("10:00 AM");
+  const [tourVisitors, setTourVisitors] = useState(2);
   const [tourSuccessMsg, setTourSuccessMsg] = useState("");
 
   const handleAdmissionSubmit = async (e: React.FormEvent) => {
@@ -44,10 +53,23 @@ export default function AdmissionsSection({ onSuccess, prefilledProgram = "Nurse
       const res = await fetch("/api/admissions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ childName, parentName, email, phone, dob, program }),
+        body: JSON.stringify({ 
+          childName, 
+          parentName, 
+          email, 
+          phone, 
+          dob, 
+          program,
+          gender,
+          address,
+          preferredStartDate,
+          emergencyContact,
+          previousSchool,
+          specialNotes
+        }),
       });
-      const data = await res.json();
-      if (res.ok) {
+      const data = await safeJson(res);
+      if (!data.error) {
         setAdmSuccessMsg(data.message);
         // Reset
         setChildName("");
@@ -55,6 +77,11 @@ export default function AdmissionsSection({ onSuccess, prefilledProgram = "Nurse
         setEmail("");
         setPhone("");
         setDob("");
+        setAddress("");
+        setPreferredStartDate("");
+        setEmergencyContact("");
+        setPreviousSchool("");
+        setSpecialNotes("");
         onSuccess();
       } else {
         alert(data.error || "Submission failed");
@@ -81,15 +108,17 @@ export default function AdmissionsSection({ onSuccess, prefilledProgram = "Nurse
           phone: tourPhone,
           date: tourDate,
           time: tourTime,
+          visitors: tourVisitors
         }),
       });
-      const data = await res.json();
-      if (res.ok) {
+      const data = await safeJson(res);
+      if (!data.error) {
         setTourSuccessMsg(data.message);
         setTourParentName("");
         setTourEmail("");
         setTourPhone("");
         setTourDate("");
+        setTourVisitors(2);
         onSuccess();
       } else {
         alert(data.error || "Tour booking failed");
@@ -205,12 +234,22 @@ export default function AdmissionsSection({ onSuccess, prefilledProgram = "Nurse
                           <br />
                           <span className="font-bold text-slate-700">Check the Portal Dashboard tab; Ethan has been added to our live directory!</span>
                         </p>
-                        <button
-                          onClick={() => setAdmSuccessMsg("")}
-                          className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-5 py-2 rounded-xl cursor-pointer"
-                        >
-                          Submit Another Enquiry
-                        </button>
+                        <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
+                          <button
+                            onClick={() => setAdmSuccessMsg("")}
+                            className="bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold px-5 py-2.5 rounded-xl cursor-pointer"
+                          >
+                            Submit Another Enquiry
+                          </button>
+                          {onGoToDashboard && (
+                            <button
+                              onClick={onGoToDashboard}
+                              className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 text-xs font-bold px-5 py-2.5 rounded-xl cursor-pointer flex items-center justify-center gap-1.5"
+                            >
+                              Go to Portal Dashboard <ArrowRight size={13} />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     ) : (
                       <form onSubmit={handleAdmissionSubmit} className="space-y-4 text-xs">
@@ -296,6 +335,78 @@ export default function AdmissionsSection({ onSuccess, prefilledProgram = "Nurse
                           </div>
                         </div>
 
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-slate-500 font-bold uppercase mb-1.5">Gender *</label>
+                            <select
+                              value={gender}
+                              onChange={(e) => setGender(e.target.value)}
+                              className="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-800 font-sans focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                              required
+                            >
+                              <option value="Male">Male</option>
+                              <option value="Female">Female</option>
+                              <option value="Other">Other</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-slate-500 font-bold uppercase mb-1.5">Preferred Start Date</label>
+                            <input
+                              type="date"
+                              value={preferredStartDate}
+                              onChange={(e) => setPreferredStartDate(e.target.value)}
+                              className="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-800 font-sans focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-slate-500 font-bold uppercase mb-1.5">Emergency Contact *</label>
+                            <input
+                              type="tel"
+                              value={emergencyContact}
+                              onChange={(e) => setEmergencyContact(e.target.value)}
+                              placeholder="e.g. Grandma / Aunt phone"
+                              className="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-800 font-sans focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-500 font-bold uppercase mb-1.5">Previous School (if any)</label>
+                            <input
+                              type="text"
+                              value={previousSchool}
+                              onChange={(e) => setPreviousSchool(e.target.value)}
+                              placeholder="e.g. Little Angels Nursery"
+                              className="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-800 font-sans focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-slate-500 font-bold uppercase mb-1.5">Residential Address *</label>
+                          <textarea
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            placeholder="e.g. 123 Honeycomb Lane, Suite A"
+                            rows={2}
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-800 font-sans focus:outline-none focus:ring-1 focus:ring-yellow-400 text-xs"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-slate-500 font-bold uppercase mb-1.5">Special Notes / Medical Information</label>
+                          <textarea
+                            value={specialNotes}
+                            onChange={(e) => setSpecialNotes(e.target.value)}
+                            placeholder="e.g. Peanut allergy, asthma, or custom requirements..."
+                            rows={2}
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-800 font-sans focus:outline-none focus:ring-1 focus:ring-yellow-400 text-xs"
+                          />
+                        </div>
+
                         <button
                           id="btn-adm-submit"
                           type="submit"
@@ -326,12 +437,22 @@ export default function AdmissionsSection({ onSuccess, prefilledProgram = "Nurse
                           <br />
                           <span className="font-bold text-slate-700">Check the Portal Dashboard tab; your booking slot has been linked in our calendar logs!</span>
                         </p>
-                        <button
-                          onClick={() => setTourSuccessMsg("")}
-                          className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-5 py-2 rounded-xl cursor-pointer"
-                        >
-                          Book Another Tour Slot
-                        </button>
+                        <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
+                          <button
+                            onClick={() => setTourSuccessMsg("")}
+                            className="bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold px-5 py-2.5 rounded-xl cursor-pointer"
+                          >
+                            Book Another Tour Slot
+                          </button>
+                          {onGoToDashboard && (
+                            <button
+                              onClick={onGoToDashboard}
+                              className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 text-xs font-bold px-5 py-2.5 rounded-xl cursor-pointer flex items-center justify-center gap-1.5"
+                            >
+                              Go to Portal Dashboard <ArrowRight size={13} />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     ) : (
                       <form onSubmit={handleTourSubmit} className="space-y-4 text-xs">
@@ -375,7 +496,7 @@ export default function AdmissionsSection({ onSuccess, prefilledProgram = "Nurse
                           </div>
                         </div>
 
-                        <div className="grid sm:grid-cols-2 gap-4">
+                        <div className="grid sm:grid-cols-3 gap-4">
                           <div>
                             <label className="block text-slate-500 font-bold uppercase mb-1.5">Preferred Date *</label>
                             <input
@@ -400,6 +521,18 @@ export default function AdmissionsSection({ onSuccess, prefilledProgram = "Nurse
                               <option value="2:00 PM">2:00 PM</option>
                               <option value="3:30 PM">3:30 PM</option>
                             </select>
+                          </div>
+                          <div>
+                            <label className="block text-slate-500 font-bold uppercase mb-1.5">No. of Visitors *</label>
+                            <input
+                              type="number"
+                              min={1}
+                              max={10}
+                              value={tourVisitors}
+                              onChange={(e) => setTourVisitors(parseInt(e.target.value) || 2)}
+                              className="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-800 font-sans focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                              required
+                            />
                           </div>
                         </div>
 

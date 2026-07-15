@@ -26,10 +26,17 @@ import {
   Trash2,
   LogOut,
   Camera,
-  Star
+  Star,
+  Pencil,
+  Mail,
+  Key,
+  Terminal,
+  Info,
+  AlertTriangle
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { DatabaseState, Student, Homework, Notice, Message, AdmissionApplication, TourBooking } from "../types";
+import { safeJson } from "../utils";
 
 interface DashboardsProps {
   initialRole?: "parent" | "teacher" | "admin";
@@ -54,13 +61,41 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
   // Selected Student for Parent Portal
   const [activeStudentId, setActiveStudentId] = useState("stud-1");
 
-  // Admin Authentication States
-  const [isAdminAuth, setIsAdminAuth] = useState(() => {
-    return localStorage.getItem("honeybees_admin_authenticated") === "true";
+  // Current Authenticated User State
+  const [currentUser, setCurrentUser] = useState<any>(() => {
+    const saved = localStorage.getItem("honeybees_current_user");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return null;
+      }
+    }
+    const legacyAdmin = localStorage.getItem("honeybees_admin_authenticated") === "true";
+    if (legacyAdmin) {
+      return {
+        id: "u-1",
+        email: "admin@honeybees.com",
+        name: "Hive Administrator",
+        role: "admin"
+      };
+    }
+    return null;
   });
-  const [adminUsername, setAdminUsername] = useState("admin");
-  const [adminPassword, setAdminPassword] = useState("");
-  const [adminAuthError, setAdminAuthError] = useState("");
+
+  // Unified Auth States
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authName, setAuthName] = useState("");
+  const [isSigningUp, setIsSigningUp] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [authSuccessMsg, setAuthSuccessMsg] = useState("");
+
+  // Additional signup states
+  const [childName, setChildName] = useState("");
+  const [childDob, setChildDob] = useState("");
+  const [childProgram, setChildProgram] = useState("Nursery");
+  const [teacherSpecialty, setTeacherSpecialty] = useState("Nursery");
 
   // Gallery File Upload States
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -68,13 +103,24 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
   const [isUploading, setIsUploading] = useState(false);
 
   // Admin Data Explorer & Gallery Manager States
-  const [adminSubTab, setAdminSubTab] = useState<"gallery" | "students" | "submissions" | "reviews">("gallery");
+  const [adminSubTab, setAdminSubTab] = useState<"gallery" | "students" | "submissions" | "reviews" | "events" | "emails">("gallery");
+  const [selectedEmailId, setSelectedEmailId] = useState<string | null>(null);
+  const [expandedAdmId, setExpandedAdmId] = useState<string | null>(null);
+  const [expandedTourId, setExpandedTourId] = useState<string | null>(null);
 
   // Gallery Add/Edit Form State
   const [photoTitle, setPhotoTitle] = useState("");
   const [photoCategory, setPhotoCategory] = useState("classroom");
   const [photoIcon, setPhotoIcon] = useState("📸");
   const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
+  const [mediaType, setMediaType] = useState<"image" | "video">("image");
+
+  // Events Add/Edit Form State
+  const [eventTitle, setEventTitle] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [eventTime, setEventTime] = useState("");
+  const [eventDesc, setEventDesc] = useState("");
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
 
   // Student Add/Edit Form State
   const [studName, setStudName] = useState("");
@@ -87,15 +133,261 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
   const fetchDbState = async () => {
     try {
       const res = await fetch("/api/admin/data");
-      if (res.ok) {
-        const data = await res.json();
+      const data = await safeJson(res);
+      if (!data.error) {
         setDbState(data);
       }
     } catch (e) {
-      console.error("Failed to load db state", e);
+      console.warn("Failed to load db state gracefully:", e);
     } finally {
       setLoading(false);
     }
+  };
+
+  const renderAuthGate = (gateRole: "admin" | "parent" | "teacher") => {
+    const roleColors = {
+      admin: {
+        primary: "bg-yellow-400 hover:bg-yellow-500 text-slate-900 shadow-yellow-400/20",
+        border: "focus:border-yellow-400 focus:ring-yellow-400",
+        bgLight: "bg-yellow-50",
+        text: "text-yellow-600",
+        label: "Administrator Gate"
+      },
+      parent: {
+        primary: "bg-orange-400 hover:bg-orange-500 text-white shadow-orange-400/20",
+        border: "focus:border-orange-400 focus:ring-orange-400",
+        bgLight: "bg-orange-50",
+        text: "text-orange-600",
+        label: "Parent Portal Gate"
+      },
+      teacher: {
+        primary: "bg-sky-500 hover:bg-sky-600 text-white shadow-sky-500/20",
+        border: "focus:border-sky-500 focus:ring-sky-500",
+        bgLight: "bg-sky-50",
+        text: "text-sky-600",
+        label: "Educator Portal Gate"
+      }
+    }[gateRole];
+
+    const handleSubmit = (e: React.FormEvent) => {
+      if (isSigningUp) {
+        handleAuthRegister(e, gateRole);
+      } else {
+        handleAuthLogin(e, gateRole);
+      }
+    };
+
+    return (
+      <motion.div
+        key={`${gateRole}-auth-gate`}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="bg-white border border-slate-200 rounded-[32px] p-8 max-w-md mx-auto shadow-xl space-y-6 text-slate-800 my-8"
+      >
+        <div className="text-center space-y-2">
+          <div className={`inline-flex ${roleColors.bgLight} p-4 rounded-3xl ${roleColors.text} border ${gateRole === "admin" ? "border-yellow-200" : gateRole === "parent" ? "border-orange-200" : "border-sky-200"}`}>
+            <Lock size={32} />
+          </div>
+          <h3 className="font-display font-black text-2xl text-slate-950">
+            {roleColors.label}
+          </h3>
+          <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
+            {isSigningUp 
+              ? `Create a new secure ${gateRole} account with email and password.` 
+              : `Access your premium ${gateRole} dashboard with your registered credentials.`}
+          </p>
+        </div>
+
+        {/* Login / Register Toggle Tabs */}
+        {gateRole !== "admin" && (
+          <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
+            <button
+              type="button"
+              onClick={() => {
+                setIsSigningUp(false);
+                setAuthError("");
+                setAuthSuccessMsg("");
+              }}
+              className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                !isSigningUp 
+                  ? "bg-white text-slate-900 shadow-xs" 
+                  : "text-slate-500 hover:text-slate-900"
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsSigningUp(true);
+                setAuthError("");
+                setAuthSuccessMsg("");
+              }}
+              className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                isSigningUp 
+                  ? "bg-white text-slate-900 shadow-xs" 
+                  : "text-slate-500 hover:text-slate-900"
+              }`}
+            >
+              Create Account
+            </button>
+          </div>
+        )}
+
+        {authError && (
+          <div className="bg-rose-50 border border-rose-200 text-rose-600 text-xs p-3 rounded-xl font-semibold flex items-center gap-2">
+            <span className="text-lg leading-none">⚠️</span>
+            <span>{authError}</span>
+          </div>
+        )}
+
+        {authSuccessMsg && (
+          <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs p-3 rounded-xl font-semibold flex items-center gap-2">
+            <span className="text-lg leading-none">✅</span>
+            <span>{authSuccessMsg}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Email/Username field */}
+          <div className="space-y-1">
+            <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+              {gateRole === "admin" && !isSigningUp ? "Email / Username" : "Email Address"}
+            </label>
+            <input
+              type={gateRole === "admin" && !isSigningUp ? "text" : "email"}
+              value={authEmail}
+              onChange={(e) => setAuthEmail(e.target.value)}
+              placeholder={gateRole === "admin" && !isSigningUp ? "e.g. admin" : "e.g. parent@honeybees.com"}
+              className={`w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 font-sans focus:outline-none ${roleColors.border} focus:bg-white text-xs`}
+              required
+            />
+          </div>
+
+          {/* Full Name field (Only for registration) */}
+          {isSigningUp && (
+            <div className="space-y-1">
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={authName}
+                onChange={(e) => setAuthName(e.target.value)}
+                placeholder="e.g. Mary Carter"
+                className={`w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 font-sans focus:outline-none ${roleColors.border} focus:bg-white text-xs`}
+                required
+              />
+            </div>
+          )}
+
+          {/* Password field */}
+          <div className="space-y-1">
+            <div className="flex justify-between items-center">
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                Password
+              </label>
+              {!isSigningUp && (
+                <span className="text-[9px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                  {gateRole === "admin" ? "Default: honeybees-admin" : gateRole === "parent" ? "Default: honeybees-parent" : "Default: honeybees-teacher"}
+                </span>
+              )}
+            </div>
+            <input
+              type="password"
+              value={authPassword}
+              onChange={(e) => setAuthPassword(e.target.value)}
+              placeholder="••••••••••••"
+              className={`w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 font-sans focus:outline-none ${roleColors.border} focus:bg-white text-xs`}
+              required
+            />
+          </div>
+
+          {/* Additional Parent Registration Fields */}
+          {isSigningUp && gateRole === "parent" && (
+            <div className="p-4 bg-orange-50/50 border border-orange-100 rounded-2xl space-y-3">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-orange-600 block">
+                👶 Child Profile Information
+              </span>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1 col-span-2">
+                  <label className="block text-[9px] font-bold text-slate-500">Child's Name</label>
+                  <input
+                    type="text"
+                    value={childName}
+                    onChange={(e) => setChildName(e.target.value)}
+                    placeholder="e.g. Ethan Carter"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-orange-400"
+                    required={isSigningUp}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-slate-500">Date of Birth</label>
+                  <input
+                    type="date"
+                    value={childDob}
+                    onChange={(e) => setChildDob(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-orange-400"
+                    required={isSigningUp}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-slate-500">Program / Class</label>
+                  <select
+                    value={childProgram}
+                    onChange={(e) => setChildProgram(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-orange-400 cursor-pointer font-sans"
+                  >
+                    <option value="Play Group">Play Group</option>
+                    <option value="Nursery">Nursery Hive</option>
+                    <option value="LKG">LKG</option>
+                    <option value="UKG">UKG</option>
+                    <option value="Tuition">Special Tuition</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Additional Teacher Registration Fields */}
+          {isSigningUp && gateRole === "teacher" && (
+            <div className="p-4 bg-sky-50/50 border border-sky-100 rounded-2xl space-y-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-sky-600 block">
+                💼 Educator Specialty
+              </span>
+              <div className="space-y-1">
+                <label className="block text-[9px] font-bold text-slate-500">Select Specialty / Class</label>
+                <select
+                  value={teacherSpecialty}
+                  onChange={(e) => setTeacherSpecialty(e.target.value)}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-sky-400 cursor-pointer font-sans"
+                >
+                  <option value="Nursery">Nursery Hive</option>
+                  <option value="Play Group">Play Group</option>
+                  <option value="Tuition">Special Tuition</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className={`w-full font-bold py-3 rounded-xl transition-all cursor-pointer shadow-md text-xs flex justify-center items-center gap-1.5 ${roleColors.primary}`}
+          >
+            <Unlock size={13} /> {isSigningUp ? "Create Account & Enter Portal" : "Sign In & Unlock Portal"}
+          </button>
+        </form>
+
+        {!isSigningUp && (
+          <div className="text-center">
+            <span className="text-[10px] font-mono text-slate-400">
+              Demo Credentials Available For Evaluators • Secure SSL Sandbox
+            </span>
+          </div>
+        )}
+      </motion.div>
+    );
   };
 
   useEffect(() => {
@@ -114,8 +406,8 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ studentId, term }),
       });
-      const data = await res.json();
-      if (res.ok) {
+      const data = await safeJson(res);
+      if (!data.error) {
         alert(data.message || "Fee payment logged!");
         fetchDbState();
       } else {
@@ -144,8 +436,8 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
           dueDate: hwDueDate,
         }),
       });
-      const data = await res.json();
-      if (res.ok) {
+      const data = await safeJson(res);
+      if (!data.error) {
         alert("Homework uploaded and parents notified!");
         setHwTitle("");
         setHwDesc("");
@@ -223,21 +515,87 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
     setTimeout(() => setBroadcastSent(false), 4000);
   };
 
-  // --- Admin Authentication Handlers ---
-  const handleAdminLogin = (e: React.FormEvent) => {
+  // --- Unified Authentication Handlers ---
+  const handleAuthLogin = async (e: React.FormEvent, targetRole: "admin" | "parent" | "teacher") => {
     e.preventDefault();
-    if (adminUsername.trim() === "admin" && adminPassword === "honeybees-admin") {
-      setIsAdminAuth(true);
-      setAdminAuthError("");
-      setAdminPassword("");
-      localStorage.setItem("honeybees_admin_authenticated", "true");
-    } else {
-      setAdminAuthError("Invalid Administrator credentials. Please try again.");
+    setAuthError("");
+    setAuthSuccessMsg("");
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: authEmail, password: authPassword }),
+      });
+      const data = await safeJson(res);
+      if (!data.error) {
+        if (data.user.role !== targetRole) {
+          setAuthError(`This account is registered as a ${data.user.role}, but you are trying to access the ${targetRole} portal.`);
+          return;
+        }
+        setCurrentUser(data.user);
+        localStorage.setItem("honeybees_current_user", JSON.stringify(data.user));
+        if (data.user.role === "admin") {
+          localStorage.setItem("honeybees_admin_authenticated", "true");
+        }
+        if (data.user.studentId) {
+          setActiveStudentId(data.user.studentId);
+        }
+        setAuthEmail("");
+        setAuthPassword("");
+        setAuthName("");
+        setIsSigningUp(false);
+      } else {
+        setAuthError(data.error || "Login failed");
+      }
+    } catch (err) {
+      setAuthError("Failed to connect to authentication gateway.");
     }
   };
 
-  const handleAdminLogout = () => {
-    setIsAdminAuth(false);
+  const handleAuthRegister = async (e: React.FormEvent, targetRole: "admin" | "parent" | "teacher") => {
+    e.preventDefault();
+    setAuthError("");
+    setAuthSuccessMsg("");
+
+    if (!authEmail || !authPassword || !authName) {
+      setAuthError("All fields are required.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: authEmail,
+          password: authPassword,
+          name: authName,
+          role: targetRole,
+          childName,
+          childDob,
+          childProgram,
+          teacherSpecialty
+        }),
+      });
+      const data = await safeJson(res);
+      if (!data.error) {
+        setAuthSuccessMsg(data.message || "Account created successfully! Please log in.");
+        setIsSigningUp(false);
+        setAuthPassword("");
+        setChildName("");
+        setChildDob("");
+      } else {
+        setAuthError(data.error || "Registration failed");
+      }
+    } catch (err) {
+      setAuthError("Failed to connect to registration gateway.");
+    }
+  };
+
+  const handleAuthLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem("honeybees_current_user");
     localStorage.removeItem("honeybees_admin_authenticated");
   };
 
@@ -274,6 +632,7 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
             file: filePreview,
             title: photoTitle,
             category: photoCategory,
+            type: mediaType
           }),
         });
       } else {
@@ -290,19 +649,21 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
             title: photoTitle,
             category: photoCategory,
             icon: photoIcon,
-            url: filePreview || undefined
+            url: filePreview || undefined,
+            type: mediaType
           }),
         });
       }
 
-      const data = await res.json();
-      if (res.ok) {
+      const data = await safeJson(res);
+      if (!data.error) {
         setPhotoTitle("");
         setPhotoIcon("📸");
         setPhotoCategory("classroom");
         setSelectedFile(null);
         setFilePreview(null);
         setEditingPhotoId(null);
+        setMediaType("image");
         fetchDbState();
         alert(data.message || "Gallery snapshot saved!");
       } else {
@@ -320,8 +681,8 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
     if (!confirm("Are you sure you want to delete this snapshot from the gallery?")) return;
     try {
       const res = await fetch(`/api/admin/gallery/${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (res.ok) {
+      const data = await safeJson(res);
+      if (!data.error) {
         fetchDbState();
       } else {
         alert(data.error || "Failed to delete");
@@ -338,6 +699,73 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
     setPhotoIcon(photo.icon || "📸");
     setFilePreview(photo.url || null);
     setSelectedFile(null);
+    setMediaType(photo.type || "image");
+  };
+
+  // --- Admin Events CRUD Handlers ---
+  const handleSaveEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!eventTitle.trim() || !eventDate.trim() || !eventTime.trim() || !eventDesc.trim()) {
+      alert("All event fields are required.");
+      return;
+    }
+
+    try {
+      const url = editingEventId
+        ? `/api/admin/events/${editingEventId}`
+        : "/api/admin/events";
+      const method = editingEventId ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: eventTitle,
+          date: eventDate,
+          time: eventTime,
+          desc: eventDesc
+        }),
+      });
+
+      const data = await safeJson(res);
+      if (!data.error) {
+        setEventTitle("");
+        setEventDate("");
+        setEventTime("");
+        setEventDesc("");
+        setEditingEventId(null);
+        fetchDbState();
+        alert(data.message || "Event saved successfully!");
+      } else {
+        alert(data.error || "Failed to save event");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error saving event.");
+    }
+  };
+
+  const handleDeleteEvent = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this event?")) return;
+    try {
+      const res = await fetch(`/api/admin/events/${id}`, { method: "DELETE" });
+      const data = await safeJson(res);
+      if (!data.error) {
+        fetchDbState();
+      } else {
+        alert(data.error || "Failed to delete event");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleStartEditEvent = (evt: any) => {
+    setEditingEventId(evt.id);
+    setEventTitle(evt.title);
+    setEventDate(evt.date);
+    setEventTime(evt.time);
+    setEventDesc(evt.desc);
   };
 
   // --- Admin Student CRUD Handlers ---
@@ -365,8 +793,8 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
         }),
       });
 
-      const data = await res.json();
-      if (res.ok) {
+      const data = await safeJson(res);
+      if (!data.error) {
         setStudName("");
         setStudParentName("");
         setStudParentEmail("");
@@ -385,8 +813,8 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
     if (!confirm("Are you sure you want to delete this student record? This cannot be undone.")) return;
     try {
       const res = await fetch(`/api/admin/students/${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (res.ok) {
+      const data = await safeJson(res);
+      if (!data.error) {
         fetchDbState();
       } else {
         alert(data.error || "Failed to delete");
@@ -402,6 +830,36 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
     setStudParentName(student.parentName);
     setStudParentEmail(student.parentEmail || "");
     setStudProgram(student.program);
+  };
+
+  const handleUpdateAdmissionStatus = async (id: string, status: string) => {
+    try {
+      const res = await fetch(`/api/admin/admissions/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        fetchDbState();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleUpdateTourStatus = async (id: string, status: string) => {
+    try {
+      const res = await fetch(`/api/admin/tours/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        fetchDbState();
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   // --- General Data Purging Handlers ---
@@ -445,8 +903,8 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
     if (!confirm("Are you sure you want to delete this parent review? This will instantly remove it from the homepage review section.")) return;
     try {
       const res = await fetch(`/api/admin/testimonials/${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (res.ok) {
+      const data = await safeJson(res);
+      if (!data.error) {
         fetchDbState();
       } else {
         alert(data.error || "Failed to delete review");
@@ -463,8 +921,8 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ verified: !currentVerified }),
       });
-      const data = await res.json();
-      if (res.ok) {
+      const data = await safeJson(res);
+      if (!data.error) {
         fetchDbState();
       } else {
         alert(data.error || "Failed to update verification status");
@@ -490,11 +948,25 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
     <div className="space-y-6">
       {/* Role Switcher Toolbar */}
       <div className="bg-slate-100 p-2.5 rounded-2xl flex flex-col sm:flex-row gap-2.5 justify-between items-center border border-slate-200 shadow-sm">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Shield size={18} className="text-yellow-600" />
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 font-display">
             Multi-Role Dashboard Testing Hub
           </span>
+          {currentUser && currentUser.role === activeRole && (
+            <div className="flex items-center gap-2 border-l border-slate-300 pl-3">
+              <span className="text-[11px] font-medium text-slate-600">
+                Session: <strong className="font-bold text-slate-850">{currentUser.name}</strong>
+              </span>
+              <button
+                onClick={handleAuthLogout}
+                className="bg-rose-50 hover:bg-rose-100 text-rose-600 text-[10px] px-2 py-0.5 rounded border border-rose-200 font-bold transition-all cursor-pointer"
+                title="Log Out of this portal"
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
         <div className="flex flex-wrap bg-white border border-slate-200 rounded-xl p-1 gap-1">
           <button
@@ -529,73 +1001,8 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
         {/*           ADMIN DASHBOARD PANEL         */}
         {/* ======================================= */}
         {activeRole === "admin" && (
-          !isAdminAuth ? (
-            <motion.div
-              key="admin-auth"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white border border-slate-200 rounded-[32px] p-8 max-w-md mx-auto shadow-xl space-y-6 text-slate-800"
-            >
-              <div className="text-center space-y-2">
-                <div className="inline-flex bg-yellow-100 p-4 rounded-3xl text-yellow-600 border border-yellow-200">
-                  <Lock size={32} />
-                </div>
-                <h3 className="font-display font-black text-2xl text-slate-950">
-                  Hive Security Gate
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Enter credentials to unlock administrative database and media management.
-                </p>
-              </div>
-
-              {adminAuthError && (
-                <div className="bg-rose-50 border border-rose-200 text-rose-600 text-xs p-3 rounded-xl font-medium">
-                  {adminAuthError}
-                </div>
-              )}
-
-              <form onSubmit={handleAdminLogin} className="space-y-4">
-                <div className="space-y-1">
-                  <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                    Username
-                  </label>
-                  <input
-                    type="text"
-                    value={adminUsername}
-                    onChange={(e) => setAdminUsername(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 font-sans focus:outline-none focus:border-yellow-400 focus:bg-white text-xs"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex justify-between items-center">
-                    <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                      Secret Passcode
-                    </label>
-                    <span className="text-[9px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
-                      Default: honeybees-admin
-                    </span>
-                  </div>
-                  <input
-                    type="password"
-                    value={adminPassword}
-                    onChange={(e) => setAdminPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 font-sans focus:outline-none focus:border-yellow-400 focus:bg-white text-xs"
-                    required
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold py-3 rounded-xl transition-all cursor-pointer shadow-md shadow-yellow-400/20 text-xs flex justify-center items-center gap-1.5"
-                >
-                  <Unlock size={14} /> Unlock Dashboard
-                </button>
-              </form>
-            </motion.div>
+          !(currentUser && currentUser.role === "admin") ? (
+            renderAuthGate("admin")
           ) : (
             <motion.div
               key="admin"
@@ -604,6 +1011,73 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
               exit={{ opacity: 0, y: -15 }}
               className="space-y-6"
             >
+              {/* Real-time Admissions & Tours Operations Center */}
+              <div className="bg-slate-900 text-white p-6 rounded-[32px] border border-slate-800 shadow-lg space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h3 className="font-display font-black text-lg text-white flex items-center gap-2">
+                      <span className="text-yellow-400">⚡</span> Real-Time Operations Control Center
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      Live telemetry tracking online admissions, physical campus tours, parent messages, and background email dispatch status.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-mono bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span className="text-slate-300">Live Synchronized</span>
+                  </div>
+                </div>
+
+                {/* 9-Column Grid of stats */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-3 text-slate-200">
+                  <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 text-center">
+                    <span className="text-[9px] text-slate-400 uppercase tracking-wider font-bold block">Admissions</span>
+                    <span className="text-lg font-extrabold text-white block mt-1">{dbState.admissions.length}</span>
+                  </div>
+                  <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 text-center">
+                    <span className="text-[9px] text-slate-400 uppercase tracking-wider font-bold block">Tours</span>
+                    <span className="text-lg font-extrabold text-white block mt-1">{dbState.tours.length}</span>
+                  </div>
+                  <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 text-center">
+                    <span className="text-[9px] text-slate-400 uppercase tracking-wider font-bold block">Enquiries</span>
+                    <span className="text-lg font-extrabold text-white block mt-1">{dbState.enquiries.length}</span>
+                  </div>
+                  <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 text-center">
+                    <span className="text-[9px] text-slate-400 uppercase tracking-wider font-bold block">New Apps</span>
+                    <span className="text-lg font-extrabold text-yellow-400 block mt-1">
+                      {dbState.admissions.filter(a => a.status === "New" || a.status === "Pending Review").length}
+                    </span>
+                  </div>
+                  <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 text-center">
+                    <span className="text-[9px] text-slate-400 uppercase tracking-wider font-bold block">Upcoming Tours</span>
+                    <span className="text-lg font-extrabold text-orange-400 block mt-1">
+                      {dbState.tours.filter(t => t.status === "New" || t.status === "Confirmed" || t.status === "Pending").length}
+                    </span>
+                  </div>
+                  <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 text-center">
+                    <span className="text-[9px] text-slate-400 uppercase tracking-wider font-bold block">Questions</span>
+                    <span className="text-lg font-extrabold text-sky-400 block mt-1">{dbState.enquiries.length}</span>
+                  </div>
+                  <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 text-center">
+                    <span className="text-[9px] text-slate-400 uppercase tracking-wider font-bold block">Approved</span>
+                    <span className="text-lg font-extrabold text-emerald-400 block mt-1">
+                      {dbState.admissions.filter(a => a.status === "Approved" || a.status === "Enrolled").length}
+                    </span>
+                  </div>
+                  <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 text-center font-mono">
+                    <span className="text-[9px] text-slate-400 uppercase tracking-wider font-bold block">Completed Tours</span>
+                    <span className="text-lg font-extrabold text-purple-400 block mt-1">
+                      {dbState.tours.filter(t => t.status === "Completed" || t.status === "Done").length}
+                    </span>
+                  </div>
+                  <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 text-center col-span-2 md:col-span-1">
+                    <span className="text-[9px] text-slate-400 uppercase tracking-wider font-bold block">Contact Requests</span>
+                    <span className="text-lg font-extrabold text-pink-400 block mt-1">
+                      {dbState.enquiries.length}
+                    </span>
+                  </div>
+                </div>
+              </div>
             {/* KPI Cards Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs">
@@ -652,48 +1126,158 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
               {/* Kanban Admissions Funnel List */}
               <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs lg:col-span-2 space-y-4">
                 <div className="flex justify-between items-center">
-                  <h4 className="font-display font-bold text-lg text-slate-900">
-                    Online Admissions Pipeline
-                  </h4>
+                  <div className="space-y-1">
+                    <h4 className="font-display font-bold text-lg text-slate-900 flex items-center gap-1.5">
+                      📝 Online Admissions Pipeline
+                    </h4>
+                    <p className="text-[10px] text-slate-500">
+                      Click any application card below to toggle deep-dive inspection and manage CRM pipeline state.
+                    </p>
+                  </div>
                   <span className="bg-yellow-100 text-yellow-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                    {dbState.admissions.length} Pending Actions
+                    {dbState.admissions.length} Registered
                   </span>
                 </div>
 
-                <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
-                  {dbState.admissions.map((adm) => (
-                    <div key={adm.id} className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h5 className="font-display font-bold text-sm text-slate-950">{adm.childName}</h5>
-                          <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase ${
-                            adm.status === "Approved" ? "bg-emerald-100 text-emerald-800" : "bg-yellow-100 text-yellow-800"
-                          }`}>
-                            {adm.status}
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                          Parent: {adm.parentName} • {adm.phone}
-                        </p>
-                        <div className="flex gap-4 mt-2 text-[11px] text-slate-400 font-mono">
-                          <span>Program: {adm.program}</span>
-                          <span>DOB: {adm.dob}</span>
-                        </div>
-                      </div>
-                      <div className="flex gap-1.5 self-stretch sm:self-auto justify-end">
-                        <button
-                          onClick={() => {
-                            adm.status = "Approved";
-                            fetchDbState();
-                          }}
-                          disabled={adm.status === "Approved"}
-                          className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs px-2.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer"
+                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+                  {dbState.admissions.map((adm) => {
+                    const isExpanded = expandedAdmId === adm.id;
+                    
+                    // Style by pipeline state
+                    const statusStyles: Record<string, string> = {
+                      "New": "bg-blue-100 text-blue-800 border-blue-200",
+                      "Contacted": "bg-indigo-100 text-indigo-800 border-indigo-200",
+                      "Tour Scheduled": "bg-orange-100 text-orange-800 border-orange-200",
+                      "Approved": "bg-emerald-100 text-emerald-800 border-emerald-200",
+                      "Enrolled": "bg-teal-100 text-teal-800 border-teal-200",
+                      "Declined": "bg-rose-100 text-rose-800 border-rose-200"
+                    };
+                    const statusClass = statusStyles[adm.status] || "bg-yellow-100 text-yellow-800 border-yellow-200";
+
+                    return (
+                      <div 
+                        key={adm.id} 
+                        className={`border rounded-2xl transition-all ${
+                          isExpanded 
+                            ? "bg-amber-50/35 border-yellow-400/50 shadow-sm" 
+                            : "bg-slate-50 border-slate-200 hover:bg-slate-100/50"
+                        }`}
+                      >
+                        {/* Header/Summary Line */}
+                        <div 
+                          onClick={() => setExpandedAdmId(isExpanded ? null : adm.id)}
+                          className="p-4 cursor-pointer flex justify-between items-start gap-4 select-none"
                         >
-                          Approve
-                        </button>
+                          <div className="space-y-1 flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h5 className="font-display font-black text-sm text-slate-950 truncate">
+                                {adm.childName}
+                              </h5>
+                              <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full border uppercase ${statusClass}`}>
+                                {adm.status || "New"}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-600 truncate font-medium">
+                              Parent: {adm.parentName} • <span className="font-mono text-[11px]">{adm.phone}</span>
+                            </p>
+                            <div className="flex gap-4 text-[10px] text-slate-400 font-mono">
+                              <span>Program: {adm.program}</span>
+                              <span>DOB: {adm.dob}</span>
+                            </div>
+                          </div>
+                          
+                          <div className="shrink-0 text-right space-y-1">
+                            <span className="text-[10px] text-slate-400 block font-mono">{adm.date}</span>
+                            <span className="text-xs text-yellow-600 font-bold block">
+                              {isExpanded ? "Collapse ▲" : "View Details ▼"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Collapsible Inspection Details */}
+                        {isExpanded && (
+                          <div className="px-4 pb-4 border-t border-slate-150/50 pt-4 space-y-4 bg-white/50 rounded-b-2xl text-xs">
+                            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                              {/* Child info */}
+                              <div className="space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200/50">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Child Particulars</span>
+                                <div className="space-y-0.5 text-slate-700">
+                                  <p><strong className="text-slate-900">Gender:</strong> {adm.gender || "Male"}</p>
+                                  <p><strong className="text-slate-900">DOB:</strong> {adm.dob}</p>
+                                  <p><strong className="text-slate-900">Prev. School:</strong> {adm.previousSchool || "None"}</p>
+                                </div>
+                              </div>
+
+                              {/* Parent contact info */}
+                              <div className="space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200/50">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Parent & Contacts</span>
+                                <div className="space-y-0.5 text-slate-700">
+                                  <p><strong className="text-slate-900">Name:</strong> {adm.parentName}</p>
+                                  <p><strong className="text-slate-900">Email:</strong> <span className="select-all font-mono text-[11px]">{adm.email}</span></p>
+                                  <p><strong className="text-slate-900">Emergency Num:</strong> <span className="font-mono">{adm.emergencyContact || "N/A"}</span></p>
+                                </div>
+                              </div>
+
+                              {/* Admission settings */}
+                              <div className="space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200/50">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Program Details</span>
+                                <div className="space-y-0.5 text-slate-700">
+                                  <p><strong className="text-slate-900">Assigned:</strong> {adm.program}</p>
+                                  <p><strong className="text-slate-900">Preferred Start:</strong> {adm.preferredStartDate || "N/A"}</p>
+                                  <p><strong className="text-slate-900">Enquiry Date:</strong> {adm.date}</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Full Residential Address & Medical Notes */}
+                            <div className="grid sm:grid-cols-2 gap-4">
+                              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/50 space-y-1">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Residential Address</span>
+                                <p className="text-slate-700 leading-relaxed italic">
+                                  "{adm.address || "No address supplied."}"
+                                </p>
+                              </div>
+                              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/50 space-y-1">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Special Notes & Allergies</span>
+                                <p className="text-slate-700 leading-relaxed italic">
+                                  "{adm.specialNotes || "No medical or extra notes specified."}"
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Status Pipeline Tracking Controller */}
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-yellow-500/5 p-3.5 rounded-xl border border-yellow-400/20">
+                              <div className="space-y-0.5">
+                                <span className="text-[10px] font-extrabold text-yellow-800 uppercase tracking-widest block">Update Pipeline Status</span>
+                                <p className="text-[11px] text-slate-500">Choose the current follow-up phase to move the parent along the CRM funnel.</p>
+                              </div>
+                              <div className="flex flex-wrap gap-1.5 justify-end">
+                                {["New", "Contacted", "Tour Scheduled", "Approved", "Enrolled", "Declined"].map((st) => (
+                                  <button
+                                    key={st}
+                                    onClick={() => handleUpdateAdmissionStatus(adm.id, st)}
+                                    className={`px-2.5 py-1.5 rounded-lg font-bold text-[10px] transition-all cursor-pointer ${
+                                      adm.status === st 
+                                        ? "bg-slate-900 text-white shadow-xs" 
+                                        : "bg-white hover:bg-slate-100 text-slate-700 border border-slate-200"
+                                    }`}
+                                  >
+                                    {st}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
+                    );
+                  })}
+
+                  {dbState.admissions.length === 0 && (
+                    <div className="text-center py-12 bg-slate-50 border border-dashed rounded-2xl">
+                      <p className="text-slate-500 text-xs italic">No admission requests registered.</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
 
@@ -749,22 +1333,98 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
             {/* Tour Bookings & Newsletter List */}
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs space-y-3">
-                <h4 className="font-display font-bold text-base text-slate-900">Physical School Tour Calendars</h4>
-                <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
-                  {dbState.tours.map((t) => (
-                    <div key={t.id} className="bg-slate-50 border border-slate-100 p-3 rounded-xl flex justify-between items-center text-xs">
-                      <div>
-                        <h5 className="font-bold text-slate-850">{t.parentName}</h5>
-                        <p className="text-slate-500">{t.phone} • {t.email}</p>
+                <div className="flex justify-between items-center">
+                  <h4 className="font-display font-bold text-base text-slate-900">Physical School Tour Calendars</h4>
+                  <span className="bg-orange-50 text-orange-700 font-mono text-[10px] font-bold px-1.5 py-0.5 rounded">
+                    {dbState.tours.length} Booked
+                  </span>
+                </div>
+                <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+                  {dbState.tours.map((t) => {
+                    const isTourExpanded = expandedTourId === t.id;
+                    const visitorsVal = t.visitors || 2;
+                    
+                    const tourStatusColors: Record<string, string> = {
+                      "New": "bg-blue-100 text-blue-800",
+                      "Confirmed": "bg-emerald-100 text-emerald-800",
+                      "Cancelled": "bg-rose-100 text-rose-800",
+                      "Completed": "bg-purple-100 text-purple-800"
+                    };
+                    const statusColor = tourStatusColors[t.status] || "bg-yellow-100 text-yellow-800";
+
+                    return (
+                      <div 
+                        key={t.id} 
+                        className={`border rounded-xl transition-all p-3 space-y-2.5 ${
+                          isTourExpanded 
+                            ? "bg-amber-50/20 border-yellow-400/50" 
+                            : "bg-slate-50 border-slate-100 hover:bg-slate-100/50"
+                        }`}
+                      >
+                        <div 
+                          onClick={() => setExpandedTourId(isTourExpanded ? null : t.id)}
+                          className="flex justify-between items-center text-xs cursor-pointer select-none"
+                        >
+                          <div>
+                            <h5 className="font-bold text-slate-850 flex items-center gap-1.5">
+                              👤 {t.parentName}
+                            </h5>
+                            <p className="text-slate-500 font-mono text-[10px] mt-0.5">{t.date} @ {t.time}</p>
+                          </div>
+                          <div className="text-right">
+                            <span className={`font-bold px-2 py-0.5 rounded text-[9px] uppercase tracking-wider block mb-1 ${statusColor}`}>
+                              {t.status || "New"}
+                            </span>
+                            <span className="text-[10px] text-yellow-600 font-bold block">
+                              {isTourExpanded ? "Hide ▲" : "Manage ▼"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {isTourExpanded && (
+                          <div className="text-[11px] space-y-2 pt-2 border-t border-slate-200/50 text-slate-600 bg-white/40 p-2 rounded-lg">
+                            <p><strong>Contact Email:</strong> <span className="select-all font-mono">{t.email}</span></p>
+                            <p><strong>Phone Number:</strong> <span className="select-all font-mono">{t.phone}</span></p>
+                            <p><strong>No. of Visitors:</strong> <span className="text-slate-800 font-bold">{visitorsVal} People</span></p>
+                            
+                            {/* Update Status Actions */}
+                            <div className="pt-2 flex flex-wrap gap-1 items-center justify-between">
+                              <span className="text-[9px] font-bold text-slate-400 uppercase">Status:</span>
+                              <div className="flex gap-1">
+                                {["New", "Confirmed", "Completed", "Cancelled"].map((st) => (
+                                  <button
+                                    key={st}
+                                    onClick={() => handleUpdateTourStatus(t.id, st)}
+                                    className={`px-2 py-1 rounded text-[9px] font-bold transition-all cursor-pointer ${
+                                      t.status === st 
+                                        ? "bg-slate-850 text-white shadow-xs" 
+                                        : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
+                                    }`}
+                                  >
+                                    {st}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Purge / Cancel Button */}
+                            <div className="pt-1.5 flex justify-end border-t border-slate-100">
+                              <button
+                                onClick={() => handleDeleteTour(t.id)}
+                                className="text-rose-500 hover:text-rose-700 text-[10px] font-bold transition-all cursor-pointer"
+                              >
+                                🗑️ Delete Tour Request
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <div className="text-right">
-                        <span className="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px] block mb-1">
-                          {t.status}
-                        </span>
-                        <span className="text-[10px] text-slate-500 font-mono block">{t.date} @ {t.time}</span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
+
+                  {dbState.tours.length === 0 && (
+                    <p className="text-slate-500 text-xs italic text-center py-6">No tours booked.</p>
+                  )}
                 </div>
               </div>
 
@@ -810,7 +1470,7 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
                 {/* Sub-Tabs Selector and Logout Button */}
                 <div className="flex flex-wrap items-center gap-3">
                   <button
-                    onClick={handleAdminLogout}
+                    onClick={handleAuthLogout}
                     className="flex items-center gap-1.5 bg-rose-500/20 hover:bg-rose-600 text-rose-200 hover:text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-all cursor-pointer border border-rose-500/30"
                     title="Lock admin session"
                   >
@@ -850,6 +1510,22 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
                     >
                       Parent Reviews
                     </button>
+                    <button
+                      onClick={() => setAdminSubTab("events")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        adminSubTab === "events" ? "bg-yellow-400 text-slate-950" : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      Upcoming Events
+                    </button>
+                    <button
+                      onClick={() => setAdminSubTab("emails")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        adminSubTab === "emails" ? "bg-yellow-400 text-slate-950" : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      Email Logs
+                    </button>
                   </div>
                 </div>
               </div>
@@ -884,6 +1560,44 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
                       <form onSubmit={handleSaveGalleryPhoto} className="space-y-3 text-xs">
                         <div>
                           <label className="block text-slate-400 font-semibold mb-1 uppercase tracking-wider text-[10px]">
+                            Media Type
+                          </label>
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setMediaType("image");
+                                setSelectedFile(null);
+                                setFilePreview(null);
+                              }}
+                              className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                                mediaType === "image"
+                                  ? "bg-yellow-400 text-slate-900 shadow-sm"
+                                  : "bg-slate-900 text-slate-400 border border-slate-700 hover:text-white"
+                              }`}
+                            >
+                              🖼️ Image
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setMediaType("video");
+                                setSelectedFile(null);
+                                setFilePreview(null);
+                              }}
+                              className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                                mediaType === "video"
+                                  ? "bg-yellow-400 text-slate-900 shadow-sm"
+                                  : "bg-slate-900 text-slate-400 border border-slate-700 hover:text-white"
+                              }`}
+                            >
+                              🎬 Video
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-slate-400 font-semibold mb-1 uppercase tracking-wider text-[10px]">
                             Activity / Event Title
                           </label>
                           <input
@@ -898,24 +1612,32 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
 
                         <div>
                           <label className="block text-slate-400 font-semibold mb-1 uppercase tracking-wider text-[10px]">
-                            Upload Real Photo (Cloudinary Proxy Enabled)
+                            Upload Real {mediaType === "video" ? "Video" : "Photo"} (Cloudinary Proxy Enabled)
                           </label>
                           <div className="mt-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-700 rounded-xl p-4 bg-slate-900 hover:border-yellow-400 transition-colors relative">
                             {filePreview ? (
                               <div className="w-full relative">
-                                <img
-                                  src={filePreview}
-                                  alt="Preview"
-                                  className="w-full aspect-video object-cover rounded-lg border border-slate-700"
-                                />
+                                {mediaType === "video" ? (
+                                  <video
+                                    src={filePreview}
+                                    controls
+                                    className="w-full aspect-video object-cover rounded-lg border border-slate-700"
+                                  />
+                                ) : (
+                                  <img
+                                    src={filePreview}
+                                    alt="Preview"
+                                    className="w-full aspect-video object-cover rounded-lg border border-slate-700"
+                                  />
+                                )}
                                 <button
                                   type="button"
                                   onClick={() => {
                                     setSelectedFile(null);
                                     setFilePreview(null);
                                   }}
-                                  className="absolute top-2 right-2 bg-rose-500 text-white p-1.5 rounded-full hover:bg-rose-600 transition-colors cursor-pointer"
-                                  title="Remove image"
+                                  className="absolute top-2 right-2 bg-rose-500 text-white p-1.5 rounded-full hover:bg-rose-600 transition-colors cursor-pointer z-10"
+                                  title="Remove media"
                                   disabled={isUploading}
                                 >
                                   <Trash2 size={12} />
@@ -924,11 +1646,13 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
                             ) : (
                               <label className="flex flex-col items-center justify-center cursor-pointer w-full py-3 text-slate-400 hover:text-white">
                                 <Upload size={22} className="mb-1.5 text-slate-500 animate-pulse" />
-                                <span className="text-xs font-semibold">Click to choose image file</span>
-                                <span className="text-[9px] text-slate-500 mt-0.5">PNG, JPG, JPEG up to 10MB</span>
+                                <span className="text-xs font-semibold">Click to choose {mediaType} file</span>
+                                <span className="text-[9px] text-slate-500 mt-0.5">
+                                  {mediaType === "video" ? "MP4, WebM, MOV up to 50MB" : "PNG, JPG, JPEG up to 10MB"}
+                                </span>
                                 <input
                                   type="file"
-                                  accept="image/*"
+                                  accept={mediaType === "video" ? "video/*" : "image/*"}
                                   onChange={handleFileChange}
                                   className="hidden"
                                   disabled={isUploading}
@@ -1018,12 +1742,19 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
                           >
                             <div className="flex items-center gap-3 min-w-0">
                               {photo.url ? (
-                                <img
-                                  src={photo.url}
-                                  alt={photo.title}
-                                  referrerPolicy="no-referrer"
-                                  className="w-12 h-12 object-cover rounded-xl border border-slate-700 shrink-0"
-                                />
+                                photo.type === "video" ? (
+                                  <div className="w-12 h-12 rounded-xl border border-slate-700 shrink-0 bg-slate-900 flex items-center justify-center relative overflow-hidden">
+                                    <video src={photo.url} className="w-full h-full object-cover opacity-60" />
+                                    <span className="absolute text-[10px] z-10">🎬</span>
+                                  </div>
+                                ) : (
+                                  <img
+                                    src={photo.url}
+                                    alt={photo.title}
+                                    referrerPolicy="no-referrer"
+                                    className="w-12 h-12 object-cover rounded-xl border border-slate-700 shrink-0"
+                                  />
+                                )
                               ) : (
                                 <span className="text-2xl bg-slate-900 p-2.5 rounded-xl border border-slate-700 leading-none shrink-0 block">
                                   {photo.icon || "📸"}
@@ -1375,6 +2106,384 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
                     </div>
                   </div>
                 )}
+
+                {/* 5. UPCOMING EVENTS MODERATOR */}
+                {adminSubTab === "events" && (
+                  <div className="grid lg:grid-cols-3 gap-6">
+                    {/* Add/Edit Event Form */}
+                    <div className="bg-slate-800/60 border border-slate-800 p-5 rounded-2xl space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-display font-bold text-sm text-yellow-400">
+                          {editingEventId ? "📝 Update Upcoming Event" : "📅 Add New Upcoming Event"}
+                        </h4>
+                        {editingEventId && (
+                          <button
+                            onClick={() => {
+                              setEditingEventId(null);
+                              setEventTitle("");
+                              setEventDate("");
+                              setEventTime("");
+                              setEventDesc("");
+                            }}
+                            className="text-[10px] bg-slate-700 text-slate-300 px-2 py-1 rounded hover:bg-slate-650"
+                          >
+                            Cancel Edit
+                          </button>
+                        )}
+                      </div>
+
+                      <form onSubmit={handleSaveEvent} className="space-y-3 text-xs">
+                        <div className="space-y-1">
+                          <label className="text-slate-400 font-mono">Event Title</label>
+                          <input
+                            type="text"
+                            value={eventTitle}
+                            onChange={(e) => setEventTitle(e.target.value)}
+                            placeholder="e.g. Annual Honeycomb Splash Fest"
+                            className="w-full bg-slate-900 border border-slate-750 px-3 py-2 rounded-xl text-white focus:outline-none focus:border-yellow-400"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-slate-400 font-mono">Date / Day</label>
+                          <input
+                            type="text"
+                            value={eventDate}
+                            onChange={(e) => setEventDate(e.target.value)}
+                            placeholder="e.g. Saturday, July 25th"
+                            className="w-full bg-slate-900 border border-slate-750 px-3 py-2 rounded-xl text-white focus:outline-none focus:border-yellow-400"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-slate-400 font-mono">Time Range</label>
+                          <input
+                            type="text"
+                            value={eventTime}
+                            onChange={(e) => setEventTime(e.target.value)}
+                            placeholder="e.g. 10:00 AM - 1:00 PM"
+                            className="w-full bg-slate-900 border border-slate-750 px-3 py-2 rounded-xl text-white focus:outline-none focus:border-yellow-400"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-slate-400 font-mono">Description / Details</label>
+                          <textarea
+                            value={eventDesc}
+                            onChange={(e) => setEventDesc(e.target.value)}
+                            rows={3}
+                            placeholder="e.g. Water slides, splashing games, sensory cups, and ice-creams in our outdoor gardens!"
+                            className="w-full bg-slate-900 border border-slate-750 px-3 py-2 rounded-xl text-white focus:outline-none focus:border-yellow-400 font-sans"
+                          />
+                        </div>
+
+                        <button
+                          type="submit"
+                          className="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer mt-4"
+                        >
+                          {editingEventId ? "Save Event Changes" : "Create Upcoming Event"}
+                        </button>
+                      </form>
+                    </div>
+
+                    {/* Active Events List */}
+                    <div className="lg:col-span-2 space-y-4">
+                      <div className="flex justify-between items-center bg-slate-850/20 px-4 py-3 rounded-xl border border-slate-800">
+                        <span className="text-xs font-bold text-slate-300">
+                          Active Scheduled Events ({dbState?.events?.length || 0})
+                        </span>
+                        <span className="text-[10px] text-yellow-400 font-mono bg-yellow-400/10 px-2 py-0.5 rounded border border-yellow-400/10">
+                          Managed Live
+                        </span>
+                      </div>
+
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        {dbState?.events?.map((evt: any) => (
+                          <div
+                            key={evt.id}
+                            className="bg-slate-800/80 border border-slate-750 p-4 rounded-2xl flex flex-col justify-between gap-4 text-xs hover:border-yellow-400/30 transition-all group"
+                          >
+                            <div className="space-y-2">
+                              <span className="bg-yellow-400/10 text-yellow-400 border border-yellow-400/20 text-[9px] font-bold px-2 py-0.5 rounded font-mono uppercase tracking-wider">
+                                {evt.date}
+                              </span>
+                              <h5 className="font-display font-bold text-sm text-white pt-1">
+                                {evt.title}
+                              </h5>
+                              <p className="text-[11px] text-slate-400 leading-normal font-sans">
+                                {evt.desc}
+                              </p>
+                              <div className="text-[11px] text-slate-200 font-mono font-bold flex items-center gap-1 pt-1.5">
+                                <Clock size={11} className="text-yellow-400" /> {evt.time}
+                              </div>
+                            </div>
+
+                            <div className="flex justify-end gap-1.5 pt-2 border-t border-slate-750/50">
+                              <button
+                                onClick={() => handleStartEditEvent(evt)}
+                                className="bg-slate-700 hover:bg-slate-650 text-slate-200 p-1.5 rounded-lg transition-all cursor-pointer border border-slate-600"
+                                title="Edit Event Details"
+                              >
+                                <Pencil size={11} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteEvent(evt.id)}
+                                className="bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white p-1.5 rounded-lg transition-all cursor-pointer border border-rose-500/20"
+                                title="Delete Event"
+                              >
+                                <Trash2 size={11} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+
+                        {(!dbState?.events || dbState.events.length === 0) && (
+                          <div className="col-span-2 bg-slate-800/20 border border-slate-850 rounded-2xl p-10 text-center space-y-2">
+                            <div className="text-3xl">📅</div>
+                            <h5 className="font-display font-bold text-white text-sm">No Upcoming Events Found</h5>
+                            <p className="text-[11px] text-slate-500 max-w-xs mx-auto">
+                              Add some upcoming community events above to show them dynamically in the school home page timeline.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 6. EMAIL DISPATCH CENTER */}
+                {adminSubTab === "emails" && (
+                  <div className="space-y-6">
+                    {/* Header info */}
+                    <div className="grid md:grid-cols-12 gap-6 items-stretch">
+                      {/* Left: configuration overview */}
+                      <div className="md:col-span-7 bg-slate-800/40 border border-slate-750 p-5 rounded-2xl flex flex-col justify-between space-y-4">
+                        <div className="space-y-2">
+                          <h4 className="font-display font-bold text-sm text-yellow-400 flex items-center gap-1.5">
+                            <Mail size={16} /> Automated Email Notification Bridge
+                          </h4>
+                          <p className="text-xs text-slate-300 leading-relaxed">
+                            Honey Bees utilizes a background email delivery proxy to route all admissions inquiries, contact requests, and tour bookings automatically to the school's official inbox: <span className="text-yellow-300 font-bold font-mono">hello@honeybeespreschool.com</span>.
+                          </p>
+                          <p className="text-xs text-slate-400 leading-relaxed">
+                            To ensure high-security operation and prevent client-side credential hijacking, the entire compilation and dispatch cycle is handled <strong>entirely on the server-side</strong>.
+                          </p>
+                        </div>
+
+                        {/* Connection status indicator */}
+                        <div className="p-3.5 rounded-xl border flex items-start gap-3 bg-indigo-950/30 border-indigo-500/20 text-indigo-200">
+                          <Info size={16} className="shrink-0 mt-0.5" />
+                          <div className="space-y-1">
+                            <span className="text-xs font-bold uppercase tracking-wider block">Sandbox Mode / Real Integration</span>
+                            <span className="text-[11px] block text-indigo-300">
+                              This sandbox simulates EmailJS dispatches out of the box. To send real-world emails to your inbox, set your EmailJS secret parameters inside the app's Secrets panel.
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right: developer credentials guide */}
+                      <div className="md:col-span-5 bg-slate-800/40 border border-slate-750 p-5 rounded-2xl space-y-3 font-mono text-[11px] text-slate-300">
+                        <div className="flex items-center gap-1.5 border-b border-slate-700/50 pb-2 text-yellow-400 font-bold font-display font-sans text-xs">
+                          <Key size={13} /> ENV Configuration Guide
+                        </div>
+                        <p className="text-[10px] text-slate-400">
+                          Create an account on <a href="https://www.emailjs.com" target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">emailjs.com</a> and declare these variables to route live emails:
+                        </p>
+                        <div className="space-y-2 bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-[10px] text-slate-300 leading-relaxed">
+                          <div>
+                            <span className="text-pink-400">EMAILJS_SERVICE_ID</span>: <span className="text-slate-400">"service_xxx"</span>
+                          </div>
+                          <div>
+                            <span className="text-pink-400">EMAILJS_TEMPLATE_ID</span>: <span className="text-slate-400">"template_xxx"</span>
+                          </div>
+                          <div>
+                            <span className="text-pink-400">EMAILJS_PUBLIC_KEY</span>: <span className="text-slate-400">"user_xxx"</span>
+                          </div>
+                          <div>
+                            <span className="text-pink-400">EMAILJS_PRIVATE_KEY</span>: <span className="text-slate-400">"secret_xxx"</span>
+                          </div>
+                        </div>
+                        <div className="text-[9px] text-slate-500 leading-relaxed">
+                          * Configure your template parameters to match: <code>to_email</code>, <code>subject</code>, <code>from_name</code>, <code>from_email</code>, <code>phone</code>, <code>message</code>, <code>form_type</code>, and <code>details</code>.
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Email Logs Explorer */}
+                    <div className="grid lg:grid-cols-12 gap-6 items-start">
+                      {/* Left: Email list */}
+                      <div className="lg:col-span-5 bg-slate-800/30 border border-slate-750 p-4 rounded-2xl space-y-3">
+                        <h4 className="font-display font-bold text-xs text-slate-400 uppercase tracking-wider px-1">
+                          📡 Dispatch Activity Logs ({dbState?.emails?.length || 0})
+                        </h4>
+
+                        <div className="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
+                          {dbState?.emails?.map((email) => {
+                            const isSelected = selectedEmailId === email.id;
+                            const statusColor = 
+                              email.status === "Delivered" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
+                              email.status === "Failed" ? "bg-rose-500/20 text-rose-300 border-rose-500/30" :
+                              "bg-slate-700/50 text-slate-300 border-slate-650";
+
+                            return (
+                              <button
+                                key={email.id}
+                                onClick={() => setSelectedEmailId(email.id)}
+                                className={`w-full text-left p-3 rounded-xl border transition-all cursor-pointer block space-y-1.5 ${
+                                  isSelected 
+                                    ? "bg-yellow-400/10 border-yellow-400/40 shadow-xs" 
+                                    : "bg-slate-800/40 border-slate-750 hover:bg-slate-800"
+                                }`}
+                              >
+                                <div className="flex justify-between items-center">
+                                  <span className="font-bold text-xs text-white truncate max-w-[180px]">
+                                    {email.parentName}
+                                  </span>
+                                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${statusColor}`}>
+                                    {email.status}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between items-center text-[10px] text-slate-400">
+                                  <span className="truncate max-w-[130px] font-mono">{email.formType}</span>
+                                  <span className="font-mono text-[9px]">
+                                    {new Date(email.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                  </span>
+                                </div>
+                              </button>
+                            );
+                          })}
+
+                          {(!dbState?.emails || dbState.emails.length === 0) && (
+                            <div className="p-8 text-center space-y-2">
+                              <div className="text-2xl text-slate-600">📬</div>
+                              <p className="text-xs text-slate-400">No email dispatches recorded yet.</p>
+                              <p className="text-[10px] text-slate-500 max-w-xs mx-auto">
+                                Go submit an enrollment inquiry or fill out the contact form on the home page to trigger automated emails!
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Right: Email Detail inspection panel */}
+                      <div className="lg:col-span-7 bg-slate-800/30 border border-slate-750 p-4 rounded-2xl min-h-[460px]">
+                        {(() => {
+                          const selectedEmail = dbState?.emails?.find(e => e.id === selectedEmailId) || dbState?.emails?.[0];
+                          if (!selectedEmail) {
+                            return (
+                              <div className="flex flex-col items-center justify-center min-h-[420px] text-center space-y-3">
+                                <div className="p-4 bg-slate-800 rounded-full text-slate-600">
+                                  <Mail size={32} />
+                                </div>
+                                <h5 className="font-display font-bold text-slate-300 text-xs uppercase tracking-widest">
+                                  Select an Email Log
+                                </h5>
+                                <p className="text-[11px] text-slate-500 max-w-xs">
+                                  Choose any item from the dispatch activity checklist on the left to review parsed template data, delivery parameters, and response status.
+                                </p>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <div className="space-y-4">
+                              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/50 pb-3">
+                                <div>
+                                  <span className="text-[9px] font-bold text-yellow-400 uppercase tracking-widest block">
+                                    Enquiry Email Payload
+                                  </span>
+                                  <h4 className="font-display font-black text-sm text-white">
+                                    {selectedEmail.formType}
+                                  </h4>
+                                </div>
+                                <div className="text-right">
+                                  <span className="text-[10px] font-mono text-slate-400 block">
+                                    {new Date(selectedEmail.timestamp).toLocaleString()}
+                                  </span>
+                                  <span className="text-[10px] font-mono text-slate-500 block">
+                                    ID: {selectedEmail.id}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Form payload fields */}
+                              <div className="grid grid-cols-2 gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800 text-xs">
+                                <div>
+                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-0.5">
+                                    Recipient Mailbox
+                                  </span>
+                                  <span className="text-white font-bold text-yellow-300 break-all select-all">
+                                    {selectedEmail.recipient}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-0.5">
+                                    Form Submitter
+                                  </span>
+                                  <span className="text-white font-bold block truncate">
+                                    {selectedEmail.parentName}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-0.5">
+                                    Submitter Email
+                                  </span>
+                                  <span className="text-white block truncate select-all">
+                                    {selectedEmail.email}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-0.5">
+                                    Submitter Phone
+                                  </span>
+                                  <span className="text-white block truncate select-all">
+                                    {selectedEmail.phone}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Form Message Content */}
+                              <div className="space-y-1 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                                  Extracted Message Body
+                                </span>
+                                <p className="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed italic">
+                                  "{selectedEmail.messageText}"
+                                </p>
+                              </div>
+
+                              {/* Form Full JSON payload details */}
+                              <div className="space-y-1.5">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block px-1">
+                                  Formatted Parameters Sent to Template
+                                </span>
+                                <pre className="bg-slate-950 p-3.5 rounded-xl border border-slate-850 text-[10px] font-mono text-emerald-400 overflow-x-auto max-h-[140px] whitespace-pre-wrap leading-relaxed">
+                                  {selectedEmail.details}
+                                </pre>
+                              </div>
+
+                              {/* System logs output terminal */}
+                              <div className="space-y-1.5">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block flex items-center gap-1 px-1">
+                                  <Terminal size={12} className="text-pink-400 shrink-0" /> Execution Diagnostics & Delivery Logs
+                                </span>
+                                <div className="bg-slate-950 p-3 rounded-xl border border-slate-850 font-mono text-[10px] space-y-1 text-slate-400 leading-normal max-h-[120px] overflow-y-auto">
+                                  {selectedEmail.logs.map((log, index) => (
+                                    <div key={index} className="flex gap-2 items-start">
+                                      <span className="text-pink-400 shrink-0 select-none">❯</span>
+                                      <span>{log}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
@@ -1385,8 +2494,11 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
         {/*           PARENT PORTAL PANEL           */}
         {/* ======================================= */}
         {activeRole === "parent" && (
-          <motion.div
-            key="parent"
+          !(currentUser && currentUser.role === "parent") ? (
+            renderAuthGate("parent")
+          ) : (
+            <motion.div
+              key="parent"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
@@ -1667,14 +2779,18 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
               </div>
             </div>
           </motion.div>
+          )
         )}
 
         {/* ======================================= */}
         {/*           TEACHER PORTAL PANEL          */}
         {/* ======================================= */}
         {activeRole === "teacher" && (
-          <motion.div
-            key="teacher"
+          !(currentUser && currentUser.role === "teacher") ? (
+            renderAuthGate("teacher")
+          ) : (
+            <motion.div
+              key="teacher"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
@@ -1919,6 +3035,7 @@ export default function Dashboards({ initialRole = "admin" }: DashboardsProps) {
               </div>
             </div>
           </motion.div>
+          )
         )}
       </AnimatePresence>
     </div>

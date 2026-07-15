@@ -100,26 +100,26 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-yellow-50/40 border-t border-yellow-100" id="parent-testimonials">
+    <section className="py-20 bg-gradient-to-b from-white to-yellow-50/40 dark:from-slate-950 dark:to-slate-900 border-t border-yellow-100 dark:border-slate-800 transition-colors duration-350" id="parent-testimonials">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-          <div className="inline-flex items-center gap-1.5 text-xs font-black text-yellow-600 uppercase tracking-widest bg-yellow-50 border border-yellow-200/60 px-3.5 py-1.5 rounded-full shadow-2xs">
+          <div className="inline-flex items-center gap-1.5 text-xs font-black text-yellow-600 dark:text-yellow-400 uppercase tracking-widest bg-yellow-50 dark:bg-yellow-950/40 border border-yellow-200/60 dark:border-yellow-900/30 px-3.5 py-1.5 rounded-full shadow-2xs">
             <ShieldCheck size={13} className="text-yellow-600" />
             Parent Verification
           </div>
-          <h2 className="font-display font-black text-3xl sm:text-4xl text-slate-900 tracking-tight">
-            Hear From Our Sweetwater Guardians
+          <h2 className="font-display font-black text-3xl sm:text-4xl text-slate-900 dark:text-white tracking-tight">
+            Reviews for Honey Bees Pre-School, Daycare and Tuition centre
           </h2>
-          <p className="text-slate-500 text-xs sm:text-sm leading-relaxed">
-            Read authentic, system-verified reviews from real mothers and fathers of the Honey Bees family. Only parents with matched records earn the prestigious gold badge.
+          <p className="text-slate-500 dark:text-slate-350 text-xs sm:text-sm leading-relaxed">
+            Read authentic, system-verified reviews from real mothers and fathers of the Honey Bees family.
           </p>
 
-          <div className="pt-2">
+          <div className="pt-2 flex flex-wrap gap-3.5 justify-center">
             <button
               onClick={() => setIsFormOpen(!isFormOpen)}
-              className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-full text-xs shadow-lg transition-all cursor-pointer hover:shadow-yellow-300/10 active:scale-95"
+              className="inline-flex items-center gap-2 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold px-6 py-3 rounded-full text-xs shadow-lg transition-all cursor-pointer hover:shadow-yellow-300/10 active:scale-95"
               id="write-review-btn"
             >
               {isFormOpen ? "Close Review Form" : "✍️ Share Your Experience"}
@@ -136,16 +136,16 @@ export default function Testimonials() {
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden mb-16 max-w-2xl mx-auto"
             >
-              <div className="bg-white border-2 border-yellow-200 rounded-[32px] p-6 sm:p-8 shadow-xl relative">
+              <div className="bg-white dark:bg-slate-900 border-2 border-yellow-200 dark:border-yellow-900/40 rounded-[32px] p-6 sm:p-8 shadow-xl relative">
                 <div className="absolute top-0 right-10 transform -translate-y-1/2 bg-yellow-400 text-slate-900 px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest shadow-md flex items-center gap-1">
-                  <Sparkles size={11} /> Live verification
+                   <Sparkles size={11} /> Live verification
                 </div>
 
-                <h3 className="font-display font-black text-xl text-slate-900 mb-2">
-                  Publish Your Sweetwater Guardian Review
+                <h3 className="font-display font-black text-xl text-slate-900 dark:text-white mb-2">
+                  Publish Your Honey Bees Guardian Review
                 </h3>
-                <p className="text-xs text-slate-500 mb-6 leading-relaxed">
-                  Provide your child's enrolled details (e.g. Student ID: <code className="bg-slate-100 px-1 py-0.5 rounded text-yellow-600 font-mono text-[10px]">stud-1</code> or parent email) to gain instant **Verified Parent** status with an interactive gold badge on your review.
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+                  Provide your child's enrolled details (e.g. Student ID: <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-yellow-600 dark:text-yellow-400 font-mono text-[10px]">stud-1</code> or parent email) to gain instant **Verified Parent** status with an interactive gold badge on your review.
                 </p>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
@@ -153,8 +153,8 @@ export default function Testimonials() {
                     <div
                       className={`p-4 rounded-2xl text-xs font-semibold border ${
                         statusMessage.type === "success"
-                          ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                          : "bg-rose-50 border-rose-200 text-rose-700"
+                          ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/30 text-emerald-700 dark:text-emerald-300"
+                          : "bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/30 text-rose-700 dark:text-rose-300"
                       }`}
                     >
                       {statusMessage.text}
@@ -163,7 +163,7 @@ export default function Testimonials() {
 
                   {/* Rating Selector */}
                   <div className="space-y-1.5">
-                    <label className="block text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+                    <label className="block text-[10px] font-extrabold uppercase tracking-widest text-slate-450">
                       Select Rating Stars
                     </label>
                     <div className="flex gap-1.5">
@@ -177,7 +177,7 @@ export default function Testimonials() {
                         >
                           <Star
                             size={26}
-                            className={star <= stars ? "fill-yellow-400 text-yellow-400" : "text-slate-250"}
+                            className={star <= stars ? "fill-yellow-400 text-yellow-400" : "text-slate-250 dark:text-slate-700"}
                           />
                         </button>
                       ))}
@@ -186,7 +186,7 @@ export default function Testimonials() {
 
                   {/* Avatar Picker */}
                   <div className="space-y-1.5">
-                    <label className="block text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+                    <label className="block text-[10px] font-extrabold uppercase tracking-widest text-slate-450">
                       Choose Your Guardian Avatar
                     </label>
                     <div className="flex flex-wrap gap-2.5">
@@ -197,8 +197,8 @@ export default function Testimonials() {
                           onClick={() => setAvatar(av)}
                           className={`w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all cursor-pointer ${
                             avatar === av
-                              ? "bg-yellow-400 border-2 border-slate-900 scale-110 shadow-md shadow-yellow-400/25"
-                              : "bg-slate-100 hover:bg-slate-200 border border-slate-200"
+                              ? "bg-yellow-400 border-2 border-slate-900 dark:border-white scale-110 shadow-md shadow-yellow-400/25"
+                              : "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-800"
                           }`}
                         >
                           {av}
@@ -210,7 +210,7 @@ export default function Testimonials() {
                   {/* Input Fields */}
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="block text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+                      <label className="block text-[10px] font-extrabold uppercase tracking-widest text-slate-450">
                         Your Name
                       </label>
                       <div className="relative">
@@ -220,7 +220,7 @@ export default function Testimonials() {
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="e.g. Mary Carter"
-                          className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 pl-10 font-sans focus:outline-none focus:border-yellow-400 focus:bg-white text-xs font-semibold"
+                          className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl p-3 pl-10 font-sans focus:outline-none focus:border-yellow-400 focus:bg-white dark:focus:bg-slate-900 text-xs font-semibold"
                           required
                           disabled={isSubmitting}
                         />
@@ -228,7 +228,7 @@ export default function Testimonials() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="block text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+                      <label className="block text-[10px] font-extrabold uppercase tracking-widest text-slate-455">
                         Review Content
                       </label>
                       <input
@@ -236,7 +236,7 @@ export default function Testimonials() {
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                         placeholder="Share your child's developmental highlights..."
-                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 font-sans focus:outline-none focus:border-yellow-400 focus:bg-white text-xs"
+                        className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl p-3 font-sans focus:outline-none focus:border-yellow-400 focus:bg-white dark:focus:bg-slate-900 text-xs"
                         required
                         disabled={isSubmitting}
                       />
@@ -244,18 +244,18 @@ export default function Testimonials() {
                   </div>
 
                   {/* Verification inputs */}
-                  <div className="bg-slate-50 rounded-2xl p-4 border border-slate-150 space-y-3.5">
-                    <div className="flex items-center gap-1.5 text-slate-700 font-display font-bold text-xs">
+                  <div className="bg-slate-50 dark:bg-slate-850 rounded-2xl p-4 border border-slate-150 dark:border-slate-800 space-y-3.5">
+                    <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-200 font-display font-bold text-xs">
                       <ShieldCheck size={15} className="text-yellow-600 animate-pulse" />
                       Secure Parent Verification Gate
                     </div>
-                    <p className="text-[10px] text-slate-500 leading-normal">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-normal">
                       Provide at least one credential matching your student's dashboard profile (from Parent Portal) to secure your verified shield.
                     </p>
 
                     <div className="grid sm:grid-cols-2 gap-3.5">
                       <div className="space-y-1">
-                        <label className="block text-[9px] font-extrabold uppercase tracking-widest text-slate-400">
+                        <label className="block text-[9px] font-extrabold uppercase tracking-widest text-slate-450">
                           Parent Email (Matched Profile)
                         </label>
                         <div className="relative">
@@ -265,14 +265,14 @@ export default function Testimonials() {
                             value={parentEmail}
                             onChange={(e) => setParentEmail(e.target.value)}
                             placeholder="e.g. parent@honeybees.com"
-                            className="w-full bg-white border border-slate-200 text-slate-900 rounded-lg p-2.5 pl-8 font-sans focus:outline-none focus:border-yellow-400 text-[11px]"
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-lg p-2.5 pl-8 font-sans focus:outline-none focus:border-yellow-400 text-[11px]"
                             disabled={isSubmitting}
                           />
                         </div>
                       </div>
 
                       <div className="space-y-1">
-                        <label className="block text-[9px] font-extrabold uppercase tracking-widest text-slate-400">
+                        <label className="block text-[9px] font-extrabold uppercase tracking-widest text-slate-450">
                           Student ID (e.g., stud-1)
                         </label>
                         <div className="relative">
@@ -282,7 +282,7 @@ export default function Testimonials() {
                             value={studentId}
                             onChange={(e) => setStudentId(e.target.value)}
                             placeholder="e.g. stud-1"
-                            className="w-full bg-white border border-slate-200 text-slate-900 rounded-lg p-2.5 pl-8 font-sans focus:outline-none focus:border-yellow-400 text-[11px]"
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-lg p-2.5 pl-8 font-sans focus:outline-none focus:border-yellow-400 text-[11px]"
                             disabled={isSubmitting}
                           />
                         </div>
@@ -325,7 +325,7 @@ export default function Testimonials() {
             <div className="text-4xl">🐝</div>
             <h4 className="font-display font-bold text-slate-900 text-base">No Guardian reviews published yet</h4>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Be the very first Sweetwater Guardian to share your child's milestone progress! Click the write review button above.
+              Be the very first Honey Bees Guardian to share your child's milestone progress! Click the write review button above.
             </p>
           </div>
         ) : (
@@ -335,10 +335,10 @@ export default function Testimonials() {
               <motion.div
                 key={test.id}
                 whileHover={{ y: -5 }}
-                className="bg-white border border-slate-150 p-6 rounded-[28px] shadow-2xs hover:shadow-md transition-all relative flex flex-col justify-between group hover:border-yellow-300/60"
+                className="bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 p-6 rounded-[28px] shadow-2xs hover:shadow-md transition-all relative flex flex-col justify-between group hover:border-yellow-300/60 dark:hover:border-yellow-400/40"
               >
                 {/* Quote watermark */}
-                <div className="absolute top-6 right-6 text-slate-200 select-none group-hover:text-yellow-250 transition-colors duration-300">
+                <div className="absolute top-6 right-6 text-slate-200 dark:text-slate-800 select-none group-hover:text-yellow-250 dark:group-hover:text-yellow-950/20 transition-colors duration-300">
                   <Quote size={20} />
                 </div>
 
@@ -352,30 +352,30 @@ export default function Testimonials() {
                     </div>
 
                     {test.verified ? (
-                      <span className="inline-flex items-center gap-1 text-[8.5px] font-extrabold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full select-none shadow-3xs">
+                      <span className="inline-flex items-center gap-1 text-[8.5px] font-extrabold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/30 px-2 py-0.5 rounded-full select-none shadow-3xs">
                         <Check size={9} className="stroke-[3]" /> Verified Guardian
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[8px] font-extrabold text-slate-400 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full select-none">
+                      <span className="inline-flex items-center gap-1 text-[8px] font-extrabold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded-full select-none">
                         Community Member
                       </span>
                     )}
                   </div>
 
-                  <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed font-sans italic">
+                  <p className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-300 leading-relaxed font-sans italic">
                     "{test.text}"
                   </p>
                 </div>
 
-                <div className="flex gap-3 items-center pt-4 mt-6 border-t border-slate-100">
-                  <div className="w-9 h-9 bg-yellow-100 rounded-full flex items-center justify-center text-lg shadow-3xs">
+                <div className="flex gap-3 items-center pt-4 mt-6 border-t border-slate-100 dark:border-slate-800">
+                  <div className="w-9 h-9 bg-yellow-100 dark:bg-yellow-950/40 rounded-full flex items-center justify-center text-lg shadow-3xs">
                     {test.avatar}
                   </div>
                   <div className="min-w-0">
-                    <h4 className="font-display font-bold text-xs sm:text-sm text-slate-900 truncate">
+                    <h4 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
                       {test.name}
                     </h4>
-                    <span className="text-[9px] text-slate-400 font-medium block mt-0.5 truncate max-w-full font-mono">
+                    <span className="text-[9px] text-slate-400 dark:text-slate-500 font-medium block mt-0.5 truncate max-w-full font-mono">
                       {test.role}
                     </span>
                   </div>

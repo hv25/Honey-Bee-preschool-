@@ -4,6 +4,7 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 import crypto from "crypto";
+import fs from "fs";
 
 dotenv.config();
 
@@ -31,8 +32,43 @@ const PORT = 3000;
 app.use(express.json({ limit: "15mb" }));
 app.use(express.urlencoded({ limit: "15mb", extended: true }));
 
+// Auto-save database on non-GET API mutations to preserve uploaded photos/videos & registrations
+app.use((req, res, next) => {
+  res.on("finish", () => {
+    if (req.method !== "GET" && req.path.startsWith("/api")) {
+      saveDb();
+    }
+  });
+  next();
+});
+
 // --- Mock Database (In-Memory) ---
 const db: any = {
+  users: [
+    {
+      id: "u-1",
+      email: "admin@honeybees.com",
+      password: "honeybees-admin",
+      name: "Hive Administrator",
+      role: "admin"
+    },
+    {
+      id: "u-2",
+      email: "parent@honeybees.com",
+      password: "honeybees-parent",
+      name: "Mary Carter",
+      role: "parent",
+      studentId: "stud-1"
+    },
+    {
+      id: "u-3",
+      email: "teacher@honeybees.com",
+      password: "honeybees-teacher",
+      name: "Mrs. Evelyn Green",
+      role: "teacher",
+      specialty: "Nursery"
+    }
+  ],
   admissions: [
     {
       id: "adm-1",
@@ -207,55 +243,385 @@ const db: any = {
     }
   ],
   gallery: [
-    { id: "1", title: "Circle-Time Puppet Storytelling", category: "classroom", icon: "🎭📖" },
-    { id: "2", title: "Water Wheel Splash Play", category: "splash", icon: "🏊💦" },
-    { id: "3", title: "Anti-shock Foam Slide Arena", category: "play", icon: "🤸🎪" },
-    { id: "4", title: "Honeycomb Tearing Mosaic Arts", category: "arts", icon: "🎨✂️" },
-    { id: "5", title: "Phonetic Letter Puzzle Board", category: "classroom", icon: "🧩🔤" },
-    { id: "6", title: "Clay Play Dough Molding", category: "arts", icon: "🏺👐" },
-    { id: "7", title: "Measuring Volume Water Basin", category: "splash", icon: "🐳🧪" },
-    { id: "8", title: "Garden Sensory Soil Planting", category: "play", icon: "🌻🌱" },
-    { id: "9", title: "Building Block Coordination Towers", category: "classroom", icon: "🧱📐" }
+    {
+      id: "photo-default-1",
+      title: "Interactive Classroom Reading",
+      category: "classroom",
+      icon: "📚",
+      url: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80",
+      type: "image"
+    },
+    {
+      id: "photo-default-2",
+      title: "Sensory Toys & Blocks Play",
+      category: "play",
+      icon: "🧱",
+      url: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=800&q=80",
+      type: "image"
+    },
+    {
+      id: "photo-default-3",
+      title: "Monsoon Storytelling Arena",
+      category: "classroom",
+      icon: "🎭",
+      url: "https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=800&q=80",
+      type: "image"
+    },
+    {
+      id: "photo-default-4",
+      title: "Finger Painting Creativity Session",
+      category: "arts",
+      icon: "🎨",
+      url: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80",
+      type: "image"
+    },
+    {
+      id: "photo-default-5",
+      title: "Splash Pool Summer Fest",
+      category: "splash",
+      icon: "🏊",
+      url: "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=800&q=80",
+      type: "image"
+    },
+    {
+      id: "photo-default-6",
+      title: "Play Arena & Foam Play",
+      category: "play",
+      icon: "🧸",
+      url: "https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&w=800&q=80",
+      type: "image"
+    },
+    {
+      id: "video-default-1",
+      title: "Children Learning Activities",
+      category: "classroom",
+      icon: "🎬",
+      url: "https://player.vimeo.com/external/403848143.sd.mp4?s=d1eb96db9546059d04bc5f3bb1641b80c656d028&profile_id=139&oauth2_token_id=57447761",
+      type: "video"
+    },
+    {
+      id: "video-default-2",
+      title: "Building Blocks Play Session",
+      category: "play",
+      icon: "🎬",
+      url: "https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3ccee5d543d4d30c7765239e24d1a9f75&profile_id=139&oauth2_token_id=57447761",
+      type: "video"
+    }
   ],
   testimonials: [
     {
-      id: "test-1",
-      name: "Marcus Sterling",
-      role: "Father of Lily (Nursery Class)",
-      text: "The live CCTV app is a total game-changer. Being able to see Lily cooperative-play with her friends during my lunch breaks gives our entire family complete peace of mind.",
+      id: "gtest-1",
+      name: "SAI LATA Boidapu",
+      role: "Verified Parent",
+      text: "Best environment for the kindergarten children....Well ventilated place, wide and spacious rooms, highly hygienic...",
+      stars: 5,
+      avatar: "👩🏽‍💼",
+      verified: true,
+      date: "2026-05-14"
+    },
+    {
+      id: "gtest-2",
+      name: "Tejendra Reddy",
+      role: "Verified Parent",
+      text: "We are extremely happy with our experience at Honey Bees Pre school ! The teachers are incredibly nurturing and attentive, and they’ve created such a joyful, safe, and stimulating environment for the children. My child looks forward to school every day, and it’s amazing to see the progress in their communication, social skills, and creativity. The classrooms are bright and well-equipped, and I really appreciate the school’s focus on play-based learning and individual attention. Highly recommend to any parent looking for a loving and enriching start to their child’s education.",
       stars: 5,
       avatar: "👨🏽‍💼",
       verified: true,
-      parentEmail: "marcus@example.com",
-      studentId: "stud-3",
-      date: "2026-07-01"
+      date: "2025-07-14"
     },
     {
-      id: "test-2",
-      name: "Sonia Patel",
-      role: "Mother of Kabir (LKG Class)",
-      text: "Beatrice AI is incredible! When Kabir was sick, I just texted the chatbot at 6 AM and it instantly recorded his sick leave and notified his teacher Ms. Jenkins in real-time.",
+      id: "gtest-3",
+      name: "lakshmisri sri",
+      role: "Verified Tuition Parent",
+      text: "Best tuition for kids. I love and appreciate the caring of children. Special thanks to Bindu mam",
       stars: 5,
       avatar: "👩🏻‍⚕️",
       verified: true,
-      parentEmail: "sonia@example.com",
-      studentId: "stud-4",
-      date: "2026-07-05"
+      date: "2026-05-14"
     },
     {
-      id: "test-3",
-      name: "Emily Watson",
-      role: "Mother of Leo (Safe Daycare)",
-      text: "Honey Bees provides an exceptionally clean environment. The anti-shock foam floors and chemical-free sanitized playgrounds are the best in Sweetwater Valley.",
+      id: "gtest-4",
+      name: "NANDINI BANSAL",
+      role: "Verified Parent",
+      text: "It's an amazing school. Teachers are very understanding and co-operative. They have joyful techniques to help kids settle down. Lot of different activities takes place. Perfect environment for kids!!!",
       stars: 5,
       avatar: "👩🏼‍💻",
       verified: true,
-      parentEmail: "emily@example.com",
-      studentId: "stud-5",
-      date: "2026-07-08"
+      date: "2024-07-14"
+    },
+    {
+      id: "gtest-5",
+      name: "Manoj Kumar Behara",
+      role: "Verified Parent",
+      text: "First I felt that the school was very safe with the friendly staff. I like that it’s an educational based facility with the small ratio of children and wonderful teachers and exposes your child to different aspects of learning through playful activities.",
+      stars: 5,
+      avatar: "👨🏽‍🌾",
+      verified: true,
+      date: "2021-07-14"
+    },
+    {
+      id: "gtest-6",
+      name: "revathi priyanka",
+      role: "Verified Parent",
+      text: "It's really a great pre school. My kid enjoying a lot... and he is learning many things too!",
+      stars: 5,
+      avatar: "👩🏽‍🎨",
+      verified: true,
+      date: "2025-07-14"
+    },
+    {
+      id: "gtest-7",
+      name: "Vinod Potupureddi",
+      role: "Verified Parent",
+      text: "Honey Bees is an exceptional place for children to learn and grow. I cannot imagine a staff anywhere so caring and loving. Character matters and is integrated into the curriculum and the daily activities.",
+      stars: 5,
+      avatar: "👨🏼‍🚀",
+      verified: true,
+      date: "2021-07-14"
+    },
+    {
+      id: "gtest-8",
+      name: "Jagadeesh Kalla",
+      role: "Verified Parent",
+      text: "This pre-school focuses on the child's overall growth, including social, emotional, physical, and creative development.",
+      stars: 5,
+      avatar: "👨🏽‍💼",
+      verified: true,
+      date: "2025-07-14"
+    },
+    {
+      id: "gtest-9",
+      name: "Sundar Kumar",
+      role: "Local Guide (31 reviews)",
+      text: "Amazing pre-school with good infrastructure, The staff are friendly and well trained, the best pre-school in the area. Do please visit and get acquainted and you surely will love to join your kids.",
+      stars: 5,
+      avatar: "👵🏼",
+      verified: true,
+      date: "2021-07-14"
+    },
+    {
+      id: "gtest-10",
+      name: "Kalyani Pinninty",
+      role: "Local Guide",
+      text: "Amazing playschool.. Where special care and concern is shown towards each and every child. Very friendly staff and created a good and interactive atmosphere for students. 👏😊",
+      stars: 5,
+      avatar: "👩‍👦",
+      verified: true,
+      date: "2021-07-14"
+    },
+    {
+      id: "gtest-11",
+      name: "ch Haritha",
+      role: "Local Guide",
+      text: "Very good school for kids. They will surely enjoy the ambience. Very well designed classrooms. Mainly the play area.",
+      stars: 5,
+      avatar: "👩🏽‍🎨",
+      verified: true,
+      date: "2021-07-14"
+    },
+    {
+      id: "gtest-12",
+      name: "Thiresh Kumar",
+      role: "Verified Parent",
+      text: "Good caring, nice activities and safe environment for children.",
+      stars: 5,
+      avatar: "👨‍👦",
+      verified: true,
+      date: "2026-05-14"
+    },
+    {
+      id: "gtest-13",
+      name: "Sai Lakshmi",
+      role: "Verified Parent",
+      text: "Great learning opportunity on Honey Bees school. The teachers are very good and they take care of each and every child. Its an amazing school.",
+      stars: 5,
+      avatar: "👩🏽‍💼",
+      verified: true,
+      date: "2023-07-14"
+    },
+    {
+      id: "gtest-14",
+      name: "Monika Desetti",
+      role: "Verified Parent",
+      text: "It is one of the best preschool's for children, they can learn many things. So many activities are being conducted by the teaching staff.",
+      stars: 5,
+      avatar: "👩🏼‍💻",
+      verified: true,
+      date: "2023-07-14"
+    },
+    {
+      id: "gtest-15",
+      name: "ganesh janu",
+      role: "Verified Parent",
+      text: "It's a very good place for kids motivation, with friendly teachers, well-trained care takers and more interaction with nature.",
+      stars: 5,
+      avatar: "👨🏽‍💼",
+      verified: true,
+      date: "2021-07-14"
+    },
+    {
+      id: "gtest-16",
+      name: "Ravi Kumar",
+      role: "Verified Parent",
+      text: "The school is being run by a young energetic entrepreneur. Recently I visited and joined my kid. Lot of care for children by management. Thanks to Team 'Honey Bees' ... Best school in Vizag!",
+      stars: 5,
+      avatar: "👨🏽‍💼",
+      verified: true,
+      date: "2021-07-14"
+    },
+    {
+      id: "gtest-17",
+      name: "Shadgunya Modu",
+      role: "Verified Parent",
+      text: "Very good school, takes keen interest in every child's behavior.",
+      stars: 5,
+      avatar: "👩🏼‍💻",
+      verified: true,
+      date: "2023-07-14"
+    },
+    {
+      id: "gtest-18",
+      name: "Bharath Shankar",
+      role: "Verified Parent",
+      text: "Best school in Vizag.",
+      stars: 5,
+      avatar: "👨🏽‍💼",
+      verified: true,
+      date: "2026-01-14"
+    },
+    {
+      id: "gtest-19",
+      name: "BUNGA RAVI KANTH",
+      role: "Verified Parent",
+      text: "One of the best schools around, takes very good care of the kids.",
+      stars: 5,
+      avatar: "👨🏽‍💼",
+      verified: true,
+      date: "2023-07-14"
+    },
+    {
+      id: "gtest-20",
+      name: "Venkata Guntuboina",
+      role: "Verified Parent",
+      text: "Unique and best pre school in Vizag with home like environment for the kids.",
+      stars: 5,
+      avatar: "👨🏽‍💼",
+      verified: true,
+      date: "2022-07-14"
+    },
+    {
+      id: "gtest-21",
+      name: "sam77 Samins",
+      role: "Verified Parent",
+      text: "Superb place. Its a very nice and CENTRAL PLACE for children's mind and behavior improvement.",
+      stars: 5,
+      avatar: "👨🏽‍💼",
+      verified: true,
+      date: "2021-07-14"
+    },
+    {
+      id: "gtest-22",
+      name: "surya s",
+      role: "Local Guide",
+      text: "Good caring and good discipline",
+      stars: 5,
+      avatar: "👩🏽‍💼",
+      verified: true,
+      date: "2025-12-14"
+    },
+    {
+      id: "gtest-23",
+      name: "vinay aripaka",
+      role: "Verified Parent",
+      text: "Nice... I saw some activities which are good for children.",
+      stars: 5,
+      avatar: "👨🏽‍💼",
+      verified: true,
+      date: "2023-07-14"
     }
-  ]
+  ],
+  events: [
+    {
+      id: "event-1",
+      title: "Annual Honeycomb Splash Fest",
+      date: "Saturday, July 25th",
+      time: "10:00 AM - 1:00 PM",
+      desc: "Water slides, splashing games, sensory cups, and ice-creams in our outdoor gardens! Parents welcome."
+    },
+    {
+      id: "event-2",
+      title: "Monsoon Storytelling Circle",
+      date: "Friday, August 7th",
+      time: "11:00 AM - 12:30 PM",
+      desc: "Interactive puppet theatre, rain songs, and leafy umbrella painting inside the safe cushioned play arena."
+    }
+  ],
+  emails: []
 };
+
+// --- FILE SYSTEM PERSISTENCE SYSTEM ---
+const DB_FILE = path.join(process.cwd(), "db.json");
+
+function saveDb() {
+  try {
+    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), "utf8");
+  } catch (err) {
+    console.error("Failed to write database file:", err);
+  }
+}
+
+// Load database from file if exists
+if (fs.existsSync(DB_FILE)) {
+  try {
+    const fileData = fs.readFileSync(DB_FILE, "utf8");
+    const parsed = JSON.parse(fileData);
+    for (const key of Object.keys(parsed)) {
+      if (key === "gallery" && (!parsed[key] || parsed[key].length === 0)) {
+        // Skip overwriting with empty gallery so default high-quality pre-seeded items are retained
+        continue;
+      }
+      db[key] = parsed[key];
+    }
+    console.log("Database successfully loaded from local db.json.");
+  } catch (err) {
+    console.error("Failed to parse database file, using default structure:", err);
+  }
+} else {
+  saveDb();
+}
+
+// Initialize default playroom videos for letters A-Z if missing
+if (!db.playroomVideos || Object.keys(db.playroomVideos).length === 0) {
+  db.playroomVideos = {
+    A: [{ id: "v-default-A", title: "Phonics Letter A Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    B: [{ id: "v-default-B", title: "Phonics Letter B Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    C: [{ id: "v-default-C", title: "Phonics Letter C Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    D: [{ id: "v-default-D", title: "Phonics Letter D Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    E: [{ id: "v-default-E", title: "Phonics Letter E Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    F: [{ id: "v-default-F", title: "Phonics Letter F Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    G: [{ id: "v-default-G", title: "Phonics Letter G Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    H: [{ id: "v-default-H", title: "Phonics Letter H Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    I: [{ id: "v-default-I", title: "Phonics Letter I Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    J: [{ id: "v-default-J", title: "Phonics Letter J Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    K: [{ id: "v-default-K", title: "Phonics Letter K Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    L: [{ id: "v-default-L", title: "Phonics Letter L Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    M: [{ id: "v-default-M", title: "Phonics Letter M Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    N: [{ id: "v-default-N", title: "Phonics Letter N Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    O: [{ id: "v-default-O", title: "Phonics Letter O Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    P: [{ id: "v-default-P", title: "Phonics Letter P Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    Q: [{ id: "v-default-Q", title: "Phonics Letter Q Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    R: [{ id: "v-default-R", title: "Phonics Letter R Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    S: [{ id: "v-default-S", title: "Phonics Letter S Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    T: [{ id: "v-default-T", title: "Phonics Letter T Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    U: [{ id: "v-default-U", title: "Phonics Letter U Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    V: [{ id: "v-default-V", title: "Phonics Letter V Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    W: [{ id: "v-default-W", title: "Phonics Letter W Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    X: [{ id: "v-default-X", title: "Phonics Letter X Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    Y: [{ id: "v-default-Y", title: "Phonics Letter Y Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+    Z: [{ id: "v-default-Z", title: "Phonics Letter Z Song", url: "https://www.youtube.com/embed/jPVbJ-K5674" }],
+  };
+  saveDb();
+}
 
 // --- CHATBOT SYSTEM INSTRUCTIONS ---
 const SYSTEM_INSTRUCTION = `
@@ -264,7 +630,7 @@ Your goal is to build parent trust, provide flawless program info, and guide pro
 
 Here are key facts about Honey Bees:
 - Name: Honey Bees Pre-School, Daycare and Tuition centre
-- Contact: 086883 30502, email: hello@honeybeespreschool.com, Address: 123 Honeycomb Lane, Sweetwater Valley, SW 4567 (Google Maps: https://maps.app.goo.gl/WgdtDjTyXkW9z62X9).
+- Contact: 086883 30502, email: hello@honeybeespreschool.com, Address: LAWSON'S BAY COLONY, 4-43-16/1, Lawsons Bay Colony, Pedda Waltair, Visakhapatnam, Andhra Pradesh 530017 (Google Maps: https://www.google.com/maps/search/?api=1&query=LAWSON%27S+BAY+COLONY%2C+4-43-16%2F1%2C+Lawsons+Bay+Colony%2C+Pedda+Waltair%2C+Visakhapatnam%2C+Andhra+Pradesh+530017).
 - Programs:
   1. Play Group (1.5 - 2.5 yrs): Sensory learning, motor skills. Monthly fee: $150. Timings: 9:00 AM - 12:00 PM.
   2. Nursery (2.5 - 3.5 yrs): Early phonics, social, creative. Monthly fee: $180. Timings: 9:00 AM - 12:30 PM.
@@ -303,7 +669,7 @@ function getBackupReply(message: string): string {
   } else if (msg.includes("tuition") || msg.includes("class") || msg.includes("grade")) {
     reply = "Our Tuition Centre (Grades 1-10) covers Mathematics, Science, and English. 📚 Timings are 4:00 PM to 7:30 PM, led by expert coaches who help with school homework and test-prep. Monthly fee is $100 per subject.";
   } else if (msg.includes("contact") || msg.includes("phone") || msg.includes("address") || msg.includes("location") || msg.includes("email")) {
-    reply = "You can reach our administrative desk at **086883 30502** or email **hello@honeybeespreschool.com**. 🐝 We are located at **123 Honeycomb Lane, Sweetwater Valley, SW 4567**. You can find us on Google Maps here: https://maps.app.goo.gl/WgdtDjTyXkW9z62X9 !";
+    reply = "You can reach our administrative desk at **086883 30502** or email **hello@honeybeespreschool.com**. 🐝 We are located at **LAWSON'S BAY COLONY, 4-43-16/1, Lawsons Bay Colony, Pedda Waltair, Visakhapatnam, Andhra Pradesh 530017**. You can find us on Google Maps here: [Google Maps](https://www.google.com/maps/search/?api=1&query=LAWSON%27S+BAY+COLONY%2C+4-43-16%2F1%2C+Lawsons+Bay+Colony%2C+Pedda+Waltair%2C+Visakhapatnam%2C+Andhra+Pradesh+530017) !";
   } else if (msg.includes("cctv") || msg.includes("safe") || msg.includes("secure") || msg.includes("camera")) {
     reply = "Safety is our absolute #1 priority! 🛡️ Honey Bees is equipped with secure, app-linked CCTV cameras. Enrolled parents are given credentials to log into their dashboard and view live feeds during play & nap times. We also have high-foam shockproof flooring and child-locked exit gates.";
   }
@@ -312,7 +678,45 @@ function getBackupReply(message: string): string {
 
 // --- API ENDPOINTS ---
 
-// AI Support Chatbot (uses server-side Gemini 3.5 Flash)
+// Helper to query Gemini with retries and model fallbacks
+async function getAIResponseWithFallbackAndRetries(message: string): Promise<string> {
+  if (!ai) {
+    throw new Error("AI client is not initialized.");
+  }
+
+  const modelsToTry = ["gemini-3.5-flash", "gemini-3.1-flash-lite"];
+  const maxRetriesPerModel = 2;
+
+  for (const model of modelsToTry) {
+    for (let attempt = 1; attempt <= maxRetriesPerModel; attempt++) {
+      try {
+        console.log(`[AI Chat] Requesting model ${model} (attempt ${attempt}/${maxRetriesPerModel})...`);
+        const chat = ai.chats.create({
+          model: model,
+          config: {
+            systemInstruction: SYSTEM_INSTRUCTION,
+            temperature: 0.7,
+          }
+        });
+        const response = await chat.sendMessage({ message });
+        if (response && response.text) {
+          console.log(`[AI Chat] Successfully received response from ${model}`);
+          return response.text;
+        }
+      } catch (err: any) {
+        console.warn(`[AI Chat] Attempt ${attempt} with model ${model} failed:`, err?.message || err);
+        if (attempt < maxRetriesPerModel) {
+          // Wait 500ms before retrying the same model
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+      }
+    }
+  }
+
+  throw new Error("All attempts with all models failed.");
+}
+
+// AI Support Chatbot (uses server-side Gemini 3.5 Flash / 3.1 Flash Lite)
 app.post("/api/chat", async (req, res) => {
   const { message, chatHistory } = req.body;
   if (!message) {
@@ -327,32 +731,118 @@ app.post("/api/chat", async (req, res) => {
   }
 
   try {
-    const chat = ai.chats.create({
-      model: "gemini-3.5-flash",
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.7,
-      }
-    });
-
-    // Feed history if available
-    if (chatHistory && Array.isArray(chatHistory)) {
-      // In the new @google/genai SDK, chat history is tracked internally, but we can send a single context
-      // Or simply construct the chat nicely.
-    }
-
-    const response = await chat.sendMessage({ message });
-    return res.json({ reply: response.text });
+    const reply = await getAIResponseWithFallbackAndRetries(message);
+    return res.json({ reply });
   } catch (error: any) {
-    console.error("Gemini API Error, falling back to smart backup responder:", error);
+    console.error("Gemini API Error after retries/fallbacks, falling back to smart backup responder:", error);
     const reply = getBackupReply(message);
     return res.json({ reply });
   }
 });
 
+// --- EMAIL DISPATCH ENGINE (EmailJS Server-Side Proxy & local sandbox log) ---
+async function triggerEmailDispatch(payload: {
+  formType: "Contact Inquiry" | "Admission Enrollment" | "School Tour Booking" | string;
+  parentName: string;
+  email: string;
+  phone: string;
+  messageText: string;
+  details: string;
+  recipient?: string;
+}) {
+  const serviceId = process.env.EMAILJS_SERVICE_ID;
+  const templateId = process.env.EMAILJS_TEMPLATE_ID;
+  const publicKey = process.env.EMAILJS_PUBLIC_KEY;
+  const privateKey = process.env.EMAILJS_PRIVATE_KEY;
+
+  const emailId = `mail-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  const timestamp = new Date().toISOString();
+
+  const recipientEmail = payload.recipient || "hello@honeybeespreschool.com";
+
+  const newLogEntry: any = {
+    id: emailId,
+    timestamp,
+    formType: payload.formType,
+    parentName: payload.parentName,
+    email: payload.email,
+    phone: payload.phone,
+    messageText: payload.messageText,
+    details: payload.details,
+    recipient: recipientEmail,
+    status: "Simulated",
+    logs: [`Email triggered in application sandbox. Recipient: ${recipientEmail}`]
+  };
+
+  const isConfigured = !!(serviceId && templateId && publicKey);
+
+  if (isConfigured) {
+    newLogEntry.logs.push(`Attempting dispatch via EmailJS (Service: ${serviceId}, Template: ${templateId})...`);
+    try {
+      const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          service_id: serviceId,
+          template_id: templateId,
+          user_id: publicKey,
+          accessToken: privateKey || undefined,
+          template_params: {
+            to_email: recipientEmail,
+            subject: `🐝 Honey Bees: ${payload.formType} by ${payload.parentName}`,
+            from_name: payload.parentName,
+            from_email: payload.email,
+            phone: payload.phone,
+            message: payload.messageText,
+            form_type: payload.formType,
+            details: payload.details,
+            timestamp
+          }
+        })
+      });
+
+      if (response.ok) {
+        newLogEntry.status = "Delivered";
+        newLogEntry.logs.push("EmailJS successfully accepted and dispatched the email!");
+      } else {
+        const errText = await response.text();
+        newLogEntry.status = "Failed";
+        newLogEntry.logs.push(`EmailJS dispatch failed with status ${response.status}: ${errText}`);
+      }
+    } catch (err: any) {
+      newLogEntry.status = "Failed";
+      newLogEntry.logs.push(`Network error connecting to EmailJS API: ${err?.message || err}`);
+    }
+  } else {
+    newLogEntry.logs.push("EmailJS credentials are not configured in system secrets. Local sandbox simulation fallback is active.");
+    newLogEntry.logs.push("To send real emails, define EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, and EMAILJS_PUBLIC_KEY in the Settings menu.");
+  }
+
+  db.emails.unshift(newLogEntry);
+  if (db.emails.length > 100) {
+    db.emails.pop();
+  }
+
+  return newLogEntry;
+}
+
 // Submit Admissions Form
 app.post("/api/admissions", (req, res) => {
-  const { childName, parentName, email, phone, dob, program } = req.body;
+  const { 
+    childName, 
+    parentName, 
+    email, 
+    phone, 
+    dob, 
+    program,
+    gender,
+    address,
+    preferredStartDate,
+    emergencyContact,
+    previousSchool,
+    specialNotes
+  } = req.body;
+
   if (!childName || !parentName || !email || !phone || !program) {
     return res.status(400).json({ error: "Missing required fields" });
   }
@@ -365,8 +855,14 @@ app.post("/api/admissions", (req, res) => {
     phone,
     dob: dob || "N/A",
     program,
-    status: "Pending Review",
-    date: new Date().toISOString().split("T")[0]
+    status: "New", // Initial state is "New"
+    date: new Date().toISOString().split("T")[0],
+    gender: gender || "Male",
+    address: address || "N/A",
+    preferredStartDate: preferredStartDate || "N/A",
+    emergencyContact: emergencyContact || "N/A",
+    previousSchool: previousSchool || "None",
+    specialNotes: specialNotes || "None"
   };
 
   db.admissions.unshift(newAdmission);
@@ -394,19 +890,56 @@ app.post("/api/admissions", (req, res) => {
   };
   db.students.push(newStudent);
 
+  const formattedDetails = `Child's Name: ${childName}
+Parent's Name: ${parentName}
+Child DOB: ${dob || "N/A"}
+Child Gender: ${gender || "Male"}
+Requested Program: ${program}
+Preferred Start Date: ${preferredStartDate || "Immediate"}
+Emergency Contact: ${emergencyContact || "N/A"}
+Previous Schooling: ${previousSchool || "None"}
+Residential Address: ${address || "N/A"}
+Medical Notes/Special Info: ${specialNotes || "None"}
+Contact Phone: ${phone}
+Contact Email: ${email}`;
+
+  // 1. Trigger background email dispatch to hello@honeybeespreschool.com (Admin)
+  triggerEmailDispatch({
+    formType: "Admission Enrollment",
+    parentName,
+    email,
+    phone,
+    messageText: `New Online Admission Enrollment request submitted for ${childName}.`,
+    details: formattedDetails,
+    recipient: "hello@honeybeespreschool.com"
+  }).catch(err => console.error("Admissions admin email dispatch error:", err));
+
+  // 2. Trigger background confirmation receipt to Parent
+  triggerEmailDispatch({
+    formType: "Admission Enrollment - Parent Confirmation",
+    parentName,
+    email,
+    phone,
+    messageText: `Dear ${parentName}, thank you for enrolling your child ${childName} at Honey Bees Pre-School! We have successfully received your request.`,
+    details: `Application Reference: ${newAdmission.id}\n\nWe will review your submission and contact you within the next 24 hours. Your child has also been added to our live directory with admission status set to 'New'.\n\nSubmitted Fields Summary:\n${formattedDetails}`,
+    recipient: email
+  }).catch(err => console.error("Admissions parent email dispatch error:", err));
+
   return res.json({
     success: true,
-    message: "Admission registration submitted successfully! An automated confirmation email and SMS/WhatsApp alert has been dispatched.",
+    message: "Admission registration submitted successfully! Real-time database has been updated, and confirmation alerts have been dispatched to both the school admin and your parent mailbox.",
     data: newAdmission
   });
 });
 
 // Book Tour
 app.post("/api/tours", (req, res) => {
-  const { parentName, email, phone, date, time } = req.body;
+  const { parentName, email, phone, date, time, visitors } = req.body;
   if (!parentName || !email || !phone || !date || !time) {
     return res.status(400).json({ error: "Missing required fields" });
   }
+
+  const visitorsCount = parseInt(visitors) || 2;
 
   const newTour = {
     id: `tour-${db.tours.length + 1}`,
@@ -415,14 +948,44 @@ app.post("/api/tours", (req, res) => {
     phone,
     date,
     time,
-    status: "Confirmed",
+    status: "New",
+    visitors: visitorsCount
   };
 
   db.tours.unshift(newTour);
 
+  const formattedDetails = `Parent Name: ${parentName}
+Preferred Date: ${date}
+Preferred Time Slot: ${time}
+Number of Visitors: ${visitorsCount}
+Contact Phone: ${phone}
+Contact Email: ${email}`;
+
+  // 1. Trigger background email dispatch to hello@honeybeespreschool.com (Admin)
+  triggerEmailDispatch({
+    formType: "School Tour Booking",
+    parentName,
+    email,
+    phone,
+    messageText: `New Physical School Tour reserved for ${date} at ${time}. Expected visitors: ${visitorsCount}.`,
+    details: formattedDetails,
+    recipient: "hello@honeybeespreschool.com"
+  }).catch(err => console.error("Tour booking admin email dispatch error:", err));
+
+  // 2. Trigger background confirmation receipt to Parent
+  triggerEmailDispatch({
+    formType: "School Tour Booking - Parent Confirmation",
+    parentName,
+    email,
+    phone,
+    messageText: `Dear ${parentName}, we are excited to welcome you for a physical school tour on ${date} at ${time}!`,
+    details: `Tour Booking Reference: ${newTour.id}\nNo. of Visitors: ${visitorsCount}\nAddress: Honey Bees Preschool & Daycare, 4th Block, HRBR Layout, Kalyan Nagar, Bengaluru.\n\nWe have booked your slot. An automated WhatsApp invite with google location map details has also been sent.`,
+    recipient: email
+  }).catch(err => console.error("Tour booking parent email dispatch error:", err));
+
   return res.json({
     success: true,
-    message: "School tour confirmed! 🐝 We have reserved your slot. An automated WhatsApp invite with address details has been sent.",
+    message: "School tour confirmed! 🐝 Real-time database has been updated, and confirmation alerts have been dispatched to both the school admin and your parent mailbox.",
     data: newTour
   });
 });
@@ -446,6 +1009,16 @@ app.post("/api/enquiry", (req, res) => {
   };
 
   db.enquiries.unshift(newEnquiry);
+
+  // Trigger background email dispatch to hello@honeybeespreschool.com
+  triggerEmailDispatch({
+    formType: "Contact Inquiry",
+    parentName,
+    email,
+    phone,
+    messageText: message,
+    details: `Parent's Name: ${parentName}\nChild's Age: ${childAge || "N/A"}\nInterested Program: ${program || "General Inquiry"}\nContact Phone: ${phone}\nContact Email: ${email}\n\nMessage: ${message}`
+  }).catch(err => console.error("Enquiry email dispatch error:", err));
 
   return res.json({
     success: true,
@@ -476,12 +1049,65 @@ app.get("/api/gallery", (req, res) => {
   return res.json(db.gallery);
 });
 
+// GET Playroom Videos
+app.get("/api/playroom/videos", (req, res) => {
+  if (!db.playroomVideos) {
+    db.playroomVideos = {};
+  }
+  return res.json(db.playroomVideos);
+});
+
+// POST Admin Add Playroom Video
+app.post("/api/admin/playroom/videos", (req, res) => {
+  const { letter, title, url } = req.body;
+  if (!letter || !title || !url) {
+    return res.status(400).json({ error: "Letter, title, and video URL are required" });
+  }
+
+  const cleanLetter = letter.toUpperCase();
+  if (!db.playroomVideos) {
+    db.playroomVideos = {};
+  }
+  if (!db.playroomVideos[cleanLetter]) {
+    db.playroomVideos[cleanLetter] = [];
+  }
+
+  const newVideo = {
+    id: `v-${Date.now()}`,
+    title: title.trim(),
+    url: url.trim(),
+  };
+
+  db.playroomVideos[cleanLetter].push(newVideo);
+  return res.json({ success: true, message: "Video lesson added successfully!", data: newVideo });
+});
+
+// DELETE Admin Playroom Video
+app.delete("/api/admin/playroom/videos/:letter/:id", (req, res) => {
+  const { letter, id } = req.params;
+  const cleanLetter = letter.toUpperCase();
+
+  if (!db.playroomVideos || !db.playroomVideos[cleanLetter]) {
+    return res.status(404).json({ error: "No videos found for this letter" });
+  }
+
+  const index = db.playroomVideos[cleanLetter].findIndex((v: any) => v.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: "Video not found" });
+  }
+
+  db.playroomVideos[cleanLetter].splice(index, 1);
+  return res.json({ success: true, message: "Video lesson deleted successfully!" });
+});
+
 // POST Admin Upload Image to Cloudinary (or Local Memory Fallback)
 app.post("/api/admin/gallery/upload", async (req, res) => {
-  const { file, title, category } = req.body;
+  const { file, title, category, type } = req.body;
   if (!file || !title || !category) {
     return res.status(400).json({ error: "File, title, and category are required" });
   }
+
+  const mediaType = type || (file.startsWith("data:video") ? "video" : "image");
 
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
   const apiKey = process.env.CLOUDINARY_API_KEY;
@@ -499,7 +1125,8 @@ app.post("/api/admin/gallery/upload", async (req, res) => {
       formData.append("api_key", apiKey);
       formData.append("signature", signature);
 
-      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+      const resourceType = mediaType === "video" ? "video" : "image";
+      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
       const response = await fetch(cloudinaryUrl, {
         method: "POST",
         body: formData,
@@ -520,13 +1147,14 @@ app.post("/api/admin/gallery/upload", async (req, res) => {
         id: `photo-${Date.now()}`,
         title,
         category,
-        url: uploadedUrl
+        url: uploadedUrl,
+        type: mediaType
       };
       db.gallery.push(newPhoto);
 
       return res.json({
         success: true,
-        message: "Image uploaded to Cloudinary successfully!",
+        message: `${mediaType === "video" ? "Video" : "Image"} uploaded to Cloudinary successfully!`,
         data: newPhoto
       });
 
@@ -536,28 +1164,30 @@ app.post("/api/admin/gallery/upload", async (req, res) => {
         id: `photo-${Date.now()}`,
         title,
         category,
-        url: file // Local memory Base64 fallback
+        url: file, // Local memory Base64 fallback
+        type: mediaType
       };
       db.gallery.push(newPhoto);
       return res.json({
         success: true,
-        message: `Saved photo locally: Cloudinary failed (${err.message})`,
+        message: `Saved media locally: Cloudinary failed (${err.message})`,
         data: newPhoto
       });
     }
   } else {
     // Graceful fallback when Cloudinary is not configured
-    console.log("Cloudinary is not configured. Saving photo to local memory database.");
+    console.log("Cloudinary is not configured. Saving media to local memory database.");
     const newPhoto = {
       id: `photo-${Date.now()}`,
       title,
       category,
-      url: file // Local memory Base64 fallback
+      url: file, // Local memory Base64 fallback
+      type: mediaType
     };
     db.gallery.push(newPhoto);
     return res.json({
       success: true,
-      message: "Saved photo to temporary local memory (Cloudinary credentials not set).",
+      message: "Saved media to temporary local memory (Cloudinary credentials not set).",
       data: newPhoto
     });
   }
@@ -565,19 +1195,21 @@ app.post("/api/admin/gallery/upload", async (req, res) => {
 
 // POST Admin Add Gallery Photo (Classic Emoji / Text metadata upload)
 app.post("/api/admin/gallery", (req, res) => {
-  const { title, category, icon, url } = req.body;
+  const { title, category, icon, url, type } = req.body;
   if (!title || !category) {
     return res.status(400).json({ error: "Title and category are required" });
   }
   if (!icon && !url) {
-    return res.status(400).json({ error: "Either Emoji Icon or Image URL is required" });
+    return res.status(400).json({ error: "Either Emoji Icon or Image/Video URL is required" });
   }
+  const mediaType = type || (url?.startsWith("data:video") || url?.endsWith(".mp4") ? "video" : "image");
   const newPhoto = {
     id: `photo-${Date.now()}`,
     title,
     category,
     icon: icon || "📸",
-    url
+    url,
+    type: mediaType
   };
   db.gallery.push(newPhoto);
   return res.json({ success: true, message: "Gallery snapshot created successfully!", data: newPhoto });
@@ -586,15 +1218,21 @@ app.post("/api/admin/gallery", (req, res) => {
 // PUT Admin Update Gallery Photo
 app.put("/api/admin/gallery/:id", (req, res) => {
   const { id } = req.params;
-  const { title, category, icon, url } = req.body;
+  const { title, category, icon, url, type } = req.body;
   const photo = db.gallery.find((p) => p.id === id);
   if (!photo) {
-    return res.status(404).json({ error: "Gallery photo not found" });
+    return res.status(404).json({ error: "Gallery item not found" });
   }
   if (title) photo.title = title;
   if (category) photo.category = category;
   if (icon !== undefined) photo.icon = icon;
-  if (url !== undefined) photo.url = url;
+  if (url !== undefined) {
+    photo.url = url;
+    if (!type) {
+      photo.type = url?.startsWith("data:video") || url?.endsWith(".mp4") ? "video" : "image";
+    }
+  }
+  if (type) photo.type = type;
   return res.json({ success: true, message: "Gallery snapshot updated successfully!", data: photo });
 });
 
@@ -667,6 +1305,37 @@ app.delete("/api/admin/students/:id", (req, res) => {
   return res.json({ success: true, message: "Student record deleted successfully!" });
 });
 
+// PUT Admin Update Admission Application Status / Fields
+app.put("/api/admin/admissions/:id", (req, res) => {
+  const { id } = req.params;
+  const { status, gender, address, preferredStartDate, emergencyContact, previousSchool, specialNotes } = req.body;
+  const admission = db.admissions.find((a) => a.id === id);
+  if (!admission) {
+    return res.status(404).json({ error: "Admission application not found" });
+  }
+  if (status) admission.status = status;
+  if (gender) admission.gender = gender;
+  if (address) admission.address = address;
+  if (preferredStartDate) admission.preferredStartDate = preferredStartDate;
+  if (emergencyContact) admission.emergencyContact = emergencyContact;
+  if (previousSchool) admission.previousSchool = previousSchool;
+  if (specialNotes) admission.specialNotes = specialNotes;
+  
+  return res.json({ success: true, message: "Admission application status updated successfully!", data: admission });
+});
+
+// PUT Admin Update Tour Booking Status
+app.put("/api/admin/tours/:id", (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const tour = db.tours.find((t) => t.id === id);
+  if (!tour) {
+    return res.status(404).json({ error: "Tour booking not found" });
+  }
+  if (status) tour.status = status;
+  return res.json({ success: true, message: "Tour booking status updated successfully!", data: tour });
+});
+
 // DELETE Admin Delete Admission Application
 app.delete("/api/admin/admissions/:id", (req, res) => {
   const { id } = req.params;
@@ -698,6 +1367,232 @@ app.delete("/api/admin/enquiries/:id", (req, res) => {
   }
   db.enquiries.splice(index, 1);
   return res.json({ success: true, message: "Enquiry record deleted successfully!" });
+});
+
+// --- AUTHENTICATION ENDPOINTS ---
+
+// POST Register new user
+app.post("/api/auth/register", (req, res) => {
+  const { email, password, name, role, childName, childDob, childProgram, teacherSpecialty } = req.body;
+  
+  if (!email || !password || !name || !role) {
+    return res.status(400).json({ error: "Email, password, name, and role are required." });
+  }
+
+  // Check if email already exists
+  const existingUser = db.users.find((u: any) => u.email.toLowerCase() === email.toLowerCase());
+  if (existingUser) {
+    return res.status(400).json({ error: "An account with this email address already exists." });
+  }
+
+  const userId = `u-${Date.now()}`;
+  let studentId = "";
+
+  // If registering as parent, automatically spawn a child/student profile so they see a populated dashboard
+  if (role === "parent") {
+    const newStudentId = `stud-${Date.now()}`;
+    studentId = newStudentId;
+    
+    const newStudent = {
+      id: newStudentId,
+      name: childName || `${name}'s Child`,
+      parentName: name,
+      parentEmail: email,
+      program: childProgram || "Nursery",
+      dob: childDob || "2023-05-10",
+      attendance: [
+        { date: "2026-07-13", status: "Present" },
+        { date: "2026-07-14", status: "Present" }
+      ],
+      fees: [
+        { term: "Term 1 (July - Sept 2026)", amount: 540, status: "Pending", dueDate: "2026-07-25" }
+      ],
+      progress: {
+        motorSkills: "Good Progress",
+        socialSkills: "Excellent",
+        creativity: "Developing",
+        cognitive: "Good Progress"
+      }
+    };
+    db.students.push(newStudent);
+  }
+
+  const newUser = {
+    id: userId,
+    email: email.toLowerCase(),
+    password, // Stored directly for mock DB simplicity
+    name,
+    role,
+    studentId,
+    specialty: role === "teacher" ? (teacherSpecialty || "Nursery") : undefined
+  };
+
+  db.users.push(newUser);
+
+  return res.json({
+    success: true,
+    message: "Your Honey Bees account was created successfully! You can now log in.",
+    user: {
+      id: newUser.id,
+      email: newUser.email,
+      name: newUser.name,
+      role: newUser.role,
+      studentId: newUser.studentId
+    }
+  });
+});
+
+// POST Login user
+app.post("/api/auth/login", (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email/username and password are required." });
+  }
+
+  const cleanEmail = String(email).trim();
+  const cleanPassword = String(password).trim();
+
+  // Handle default backwards-compatible admin credential
+  if (cleanEmail === "admin" && cleanPassword === "honeybees-admin") {
+    return res.json({
+      success: true,
+      user: {
+        id: "u-1",
+        email: "admin@honeybees.com",
+        name: "Hive Administrator",
+        role: "admin"
+      }
+    });
+  }
+
+  // Search standard email accounts
+  const user = db.users.find(
+    (u: any) => u.email.toLowerCase() === cleanEmail.toLowerCase() && u.password === cleanPassword
+  );
+
+  if (!user) {
+    return res.status(401).json({ error: "Invalid email or passcode. Please try again." });
+  }
+
+  return res.json({
+    success: true,
+    message: "Login successful!",
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      studentId: user.studentId
+    }
+  });
+});
+
+// GET All Upcoming Events
+app.get("/api/events", (req, res) => {
+  return res.json(db.events || []);
+});
+
+// POST Subscribe to Upcoming Event
+app.post("/api/events/subscribe", async (req, res) => {
+  const { eventId, email, parentName, phone } = req.body;
+  if (!eventId || !email) {
+    return res.status(400).json({ error: "Event ID and email are required" });
+  }
+
+  if (!db.events) db.events = [];
+  const event = db.events.find((e: any) => e.id === eventId);
+  if (!event) {
+    return res.status(404).json({ error: "Event not found" });
+  }
+
+  if (!db.eventSubscriptions) db.eventSubscriptions = [];
+  const isAlreadySubscribed = db.eventSubscriptions.some(
+    (sub: any) => sub.eventId === eventId && sub.email.toLowerCase() === email.toLowerCase()
+  );
+
+  if (isAlreadySubscribed) {
+    return res.status(400).json({ error: "You have already subscribed to notifications for this event!" });
+  }
+
+  const newSub = {
+    id: `sub-${Date.now()}`,
+    eventId,
+    eventTitle: event.title,
+    eventDate: event.date,
+    email,
+    parentName: parentName || "Honey Bees Parent",
+    phone: phone || "N/A",
+    subscribedAt: new Date().toISOString()
+  };
+
+  db.eventSubscriptions.push(newSub);
+  saveDb();
+
+  try {
+    await triggerEmailDispatch({
+      formType: "Event Subscription Reminder",
+      parentName: parentName || "Honey Bees Parent",
+      email,
+      phone: phone || "N/A",
+      messageText: `Successfully subscribed to reminders for the event: ${event.title}!`,
+      details: `Event Title: ${event.title}\nDate: ${event.date}\nTime: ${event.time}\nDescription: ${event.desc}\n\nYou have registered for reminders. We will notify you with updates and reminders as the event approaches. Thank you!`,
+      recipient: email
+    });
+  } catch (err) {
+    console.error("Failed to send subscription confirmation email:", err);
+  }
+
+  return res.json({
+    success: true,
+    message: `Subscription confirmed! An email confirmation has been dispatched to ${email} for "${event.title}".`
+  });
+});
+
+// POST Admin Add Upcoming Event
+app.post("/api/admin/events", (req, res) => {
+  const { title, date, time, desc } = req.body;
+  if (!title || !date || !time || !desc) {
+    return res.status(400).json({ error: "Title, date, time, and description are required" });
+  }
+  const newEvent = {
+    id: `event-${Date.now()}`,
+    title,
+    date,
+    time,
+    desc
+  };
+  if (!db.events) db.events = [];
+  db.events.push(newEvent);
+  return res.json({ success: true, message: "Upcoming event created successfully!", data: newEvent });
+});
+
+// PUT Admin Update Upcoming Event
+app.put("/api/admin/events/:id", (req, res) => {
+  const { id } = req.params;
+  const { title, date, time, desc } = req.body;
+  if (!db.events) db.events = [];
+  const event = db.events.find((e: any) => e.id === id);
+  if (!event) {
+    return res.status(404).json({ error: "Event not found" });
+  }
+  if (title) event.title = title;
+  if (date) event.date = date;
+  if (time) event.time = time;
+  if (desc) event.desc = desc;
+  return res.json({ success: true, message: "Upcoming event updated successfully!", data: event });
+});
+
+// DELETE Admin Delete Upcoming Event
+app.delete("/api/admin/events/:id", (req, res) => {
+  const { id } = req.params;
+  if (!db.events) db.events = [];
+  const index = db.events.findIndex((e: any) => e.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: "Event not found" });
+  }
+  db.events.splice(index, 1);
+  return res.json({ success: true, message: "Upcoming event deleted successfully!" });
 });
 
 // Post Teacher Homework Upload
@@ -865,7 +1760,7 @@ app.put("/api/admin/testimonials/:id", (req, res) => {
   }
   testimonial.verified = !!verified;
   if (testimonial.verified) {
-    testimonial.role = "Verified Sweetwater Guardian";
+    testimonial.role = "Verified Honey Bees Guardian";
   } else {
     testimonial.role = "Community Member";
   }

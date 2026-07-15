@@ -14,6 +14,7 @@ import Chatbot from "./components/Chatbot";
 import VoiceAssistant from "./components/VoiceAssistant";
 import Dashboards from "./components/Dashboards";
 import Playroom from "./components/Playroom";
+import BrochureModal from "./components/BrochureModal";
 import { MessageSquare, Volume2, Sparkles, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -21,6 +22,31 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<string>("home");
   const [admissionFormType, setAdmissionFormType] = useState<"admission" | "tour">("admission");
   const [selectedEnquiryProgram, setSelectedEnquiryProgram] = useState<string>("Nursery");
+  const [isBrochureOpen, setIsBrochureOpen] = useState(false);
+
+  // Auto-open brochure if query parameter is set
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("brochure") === "open") {
+        setIsBrochureOpen(true);
+      }
+    }
+  }, []);
+
+  // Global Theme State
+  const [theme] = useState<"light" | "dark">("dark");
+
+  // Apply dark class on theme change
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+  }, []);
+
+  const toggleTheme = () => {
+    // Permanently dark
+  };
 
   // Floating AI assist states
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
@@ -48,13 +74,30 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-800 font-sans flex flex-col justify-between selection:bg-yellow-200 selection:text-slate-900">
+    <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans flex flex-col justify-between selection:bg-yellow-200 dark:selection:bg-yellow-800 selection:text-slate-900 dark:selection:text-yellow-100 transition-colors duration-350">
       
+      {/* Elegant Full-screen Theme Transition Overlay */}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={theme}
+          initial={{ opacity: 0.4 }}
+          animate={{ opacity: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className={`pointer-events-none fixed inset-0 z-50 ${
+            theme === "dark" ? "bg-slate-950" : "bg-white"
+          }`}
+        />
+      </AnimatePresence>
+
       {/* Upper Navigation bar */}
       <Navigation
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onBookTourClick={handleBookTour}
+        onBrochureClick={() => setIsBrochureOpen(true)}
+        theme={theme}
+        toggleTheme={toggleTheme}
       />
 
       {/* Main Page Area */}
@@ -73,7 +116,7 @@ export default function App() {
                 onExploreProgramsClick={() => setActiveTab("programs")}
               />
               <About />
-              <ProgramsSection onEnquireClick={handleEnquireProgram} />
+              <ProgramsSection onEnquireClick={handleEnquireProgram} onBrochureClick={() => setIsBrochureOpen(true)} />
               <FacilitiesSection />
               <Testimonials />
               <GallerySection />
@@ -103,7 +146,7 @@ export default function App() {
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
             >
-              <ProgramsSection onEnquireClick={handleEnquireProgram} />
+              <ProgramsSection onEnquireClick={handleEnquireProgram} onBrochureClick={() => setIsBrochureOpen(true)} />
             </motion.div>
           )}
 
@@ -167,6 +210,7 @@ export default function App() {
                 initialForm={admissionFormType}
                 prefilledProgram={selectedEnquiryProgram}
                 onSuccess={handleAdmissionOrTourSuccess}
+                onGoToDashboard={() => setActiveTab("dashboards")}
               />
             </motion.div>
           )}
@@ -276,6 +320,24 @@ export default function App() {
           </button>
         </div>
       </div>
+
+      {/* Floating Left Brochure Bookmark button for desktop */}
+      <div className="fixed left-0 top-1/2 -translate-y-1/2 z-40 hidden md:block">
+        <button
+          onClick={() => setIsBrochureOpen(true)}
+          className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-display font-black text-[11px] py-4 px-3 rounded-r-2xl shadow-xl transition-all cursor-pointer hover:pl-5 flex items-center gap-1.5 [writing-mode:vertical-lr] rotate-180 border-t border-r border-b border-yellow-300"
+        >
+          <span>📘</span> School Brochure
+        </button>
+      </div>
+
+      {/* Interactive School Brochure Modal */}
+      <BrochureModal
+        isOpen={isBrochureOpen}
+        onClose={() => setIsBrochureOpen(false)}
+        onApplyClick={() => handleEnquireProgram("Nursery")}
+        onBookTourClick={handleBookTour}
+      />
 
     </div>
   );

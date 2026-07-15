@@ -21,7 +21,15 @@ import {
   Plus,
   Play,
   Share2,
-  ShieldAlert
+  ShieldAlert,
+  Printer,
+  X,
+  FileText,
+  ZoomIn,
+  ZoomOut,
+  RotateCw,
+  Search,
+  CheckCircle as FileCheck
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -35,32 +43,32 @@ interface AlphabetLetter {
 }
 
 const ALPHABET_LIST: AlphabetLetter[] = [
-  { letter: "A", word: "Apple", emoji: "🍎", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Ah-pul" },
-  { letter: "B", word: "Ball", emoji: "⚽", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Bah-l" },
-  { letter: "C", word: "Cat", emoji: "🐱", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Cah-t" },
-  { letter: "D", word: "Dog", emoji: "🐶", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Doh-g" },
-  { letter: "E", word: "Elephant", emoji: "🐘", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Eh-lee-fant" },
-  { letter: "F", word: "Fish", emoji: "🐟", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Fih-sh" },
-  { letter: "G", word: "Grapes", emoji: "🍇", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Gray-ps" },
-  { letter: "H", word: "Honeybee", emoji: "🐝", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Hah-nee-bee" },
-  { letter: "I", word: "Icecream", emoji: "🍦", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Ice-creem" },
-  { letter: "J", word: "Jug", emoji: "🥛", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Juh-g" },
-  { letter: "K", word: "Kite", emoji: "🪁", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Kye-t" },
-  { letter: "L", word: "Lion", emoji: "🦁", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Lye-on" },
-  { letter: "M", word: "Monkey", emoji: "🐒", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Mung-kee" },
-  { letter: "N", word: "Nest", emoji: "🪺", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Neh-st" },
-  { letter: "O", word: "Orange", emoji: "🍊", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Oh-range" },
-  { letter: "P", word: "Peacock", emoji: "🦚", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Pee-kok" },
-  { letter: "Q", word: "Queen", emoji: "👑", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Kwee-n" },
-  { letter: "R", word: "Rabbit", emoji: "🐇", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Rah-bit" },
-  { letter: "S", word: "Sun", emoji: "☀️", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Suh-n" },
-  { letter: "T", word: "Tiger", emoji: "🐯", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Tye-gur" },
-  { letter: "U", word: "Umbrella", emoji: "☂️", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Um-brel-lah" },
-  { letter: "V", word: "Violin", emoji: "🎻", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Vye-oh-lin" },
-  { letter: "W", word: "Watermelon", emoji: "🍉", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Wah-ter-mel-on" },
-  { letter: "X", word: "Xylophone", emoji: "🎹", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Zye-loh-fone" },
-  { letter: "Y", word: "Yak", emoji: "🐂", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Yah-k" },
-  { letter: "Z", word: "Zebra", emoji: "🦓", videoUrl: "https://www.youtube.com/embed/HQ3G_tX2eN8", phonetics: "Zee-bra" },
+  { letter: "A", word: "Apple", emoji: "🍎", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Ah-pul" },
+  { letter: "B", word: "Ball", emoji: "⚽", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Bah-l" },
+  { letter: "C", word: "Cat", emoji: "🐱", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Cah-t" },
+  { letter: "D", word: "Dog", emoji: "🐶", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Doh-g" },
+  { letter: "E", word: "Elephant", emoji: "🐘", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Eh-lee-fant" },
+  { letter: "F", word: "Fish", emoji: "🐟", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Fih-sh" },
+  { letter: "G", word: "Grapes", emoji: "🍇", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Gray-ps" },
+  { letter: "H", word: "Honeybee", emoji: "🐝", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Hah-nee-bee" },
+  { letter: "I", word: "Icecream", emoji: "🍦", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Ice-creem" },
+  { letter: "J", word: "Jug", emoji: "🥛", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Juh-g" },
+  { letter: "K", word: "Kite", emoji: "🪁", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Kye-t" },
+  { letter: "L", word: "Lion", emoji: "🦁", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Lye-on" },
+  { letter: "M", word: "Monkey", emoji: "🐒", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Mung-kee" },
+  { letter: "N", word: "Nest", emoji: "🪺", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Neh-st" },
+  { letter: "O", word: "Orange", emoji: "🍊", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Oh-range" },
+  { letter: "P", word: "Peacock", emoji: "🦚", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Pee-kok" },
+  { letter: "Q", word: "Queen", emoji: "👑", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Kwee-n" },
+  { letter: "R", word: "Rabbit", emoji: "🐇", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Rah-bit" },
+  { letter: "S", word: "Sun", emoji: "☀️", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Suh-n" },
+  { letter: "T", word: "Tiger", emoji: "🐯", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Tye-gur" },
+  { letter: "U", word: "Umbrella", emoji: "☂️", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Um-brel-lah" },
+  { letter: "V", word: "Violin", emoji: "🎻", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Vye-oh-lin" },
+  { letter: "W", word: "Watermelon", emoji: "🍉", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Wah-ter-mel-on" },
+  { letter: "X", word: "Xylophone", emoji: "🎹", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Zye-loh-fone" },
+  { letter: "Y", word: "Yak", emoji: "🐂", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Yah-k" },
+  { letter: "Z", word: "Zebra", emoji: "🦓", videoUrl: "https://www.youtube.com/embed/jPVbJ-K5674", phonetics: "Zee-bra" },
 ];
 
 const LETTER_STROKES: Record<string, string[]> = {
@@ -284,7 +292,7 @@ const STORIES_LIST: StoryItem[] = [
     emoji: "🐦🪨",
     summary: "A smart crow solves a difficult puzzle to drink cool water on a dry day.",
     paragraphs: [
-      "Once, on a very hot summer afternoon, a clever little black crow was flying around Sweetwater Valley, feeling extremely thirsty.",
+      "Once, on a very hot summer afternoon, a clever little black crow was flying around Lawsons Bay Colony, feeling extremely thirsty.",
       "He searched high and low but couldn't find a single stream of water. Finally, he spotted an old earthen pitcher garden pot.",
       "The crow flew down happily and peeped inside. There was water, but it was sitting right at the bottom, and his short beak couldn't reach it!",
       "Instead of crying, the smart crow saw a pile of clean little pebbles nearby. He picked them up, one by one, dropping them into the pitcher.",
@@ -329,6 +337,433 @@ const STORIES_LIST: StoryItem[] = [
   }
 ];
 
+// --- TRACING STREAK DATE HELPERS ---
+const getTodayDateString = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const getYesterdayDateString = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+// =========================================================================
+// SUBSECTION: CERTIFICATE HTML GENERATOR (LANDSCAPE & PRINT OPTIMIZED)
+// =========================================================================
+const generateCertificateHTML = (childName: string, milestoneTitle: string, milestoneDesc: string, dateStr?: string) => {
+  const cName = childName.trim() || "Little Bee";
+  const dStr = dateStr || new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Honey Bees Playroom Certificate - ${milestoneTitle}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;600;850&family=Outfit:wght@500;800;900&display=swap');
+    
+    @page {
+      size: landscape;
+      margin: 0;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+      background-color: #fafaf9;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+    }
+    
+    .certificate-border-outer {
+      width: 92%;
+      height: 88%;
+      border: 8px solid #fbbf24;
+      border-radius: 24px;
+      padding: 4px;
+      background-color: #ffffff;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+      box-sizing: border-box;
+    }
+    
+    .certificate-border-inner {
+      width: 100%;
+      height: 100%;
+      border: 3px dashed #d97706;
+      border-radius: 18px;
+      padding: 30px;
+      box-sizing: border-box;
+      background-color: #fffbeb;
+      background-image: radial-gradient(#fef3c7 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+    }
+    
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-emoji {
+      font-size: 36px;
+    }
+    
+    .academy-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 20px;
+      color: #78350f;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    
+    .academy-sub {
+      font-size: 10px;
+      color: #d97706;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    
+    .main-award-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 36px;
+      color: #92400e;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin: 10px 0 5px 0;
+      text-shadow: 1px 1px 0px #fef3c7;
+    }
+    
+    .award-sub {
+      font-size: 13px;
+      color: #78350f;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+    }
+    
+    .recipient-name {
+      font-family: 'Great Vibes', cursive, 'Outfit', sans-serif;
+      font-size: 48px;
+      color: #d97706;
+      margin: 12px 0;
+      border-bottom: 2px dashed #f59e0b;
+      padding: 0 40px 6px 40px;
+      display: inline-block;
+      text-shadow: 1px 1px 0px #fff;
+    }
+    
+    .achievement-details {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #78350f;
+      max-width: 650px;
+      margin: 5px auto;
+      font-weight: 500;
+    }
+    
+    .achievement-highlight {
+      font-weight: bold;
+      color: #b45309;
+      background-color: #fef3c7;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    
+    .certificate-footer {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 0 30px;
+      box-sizing: border-box;
+      margin-top: 15px;
+    }
+    
+    .signature-block {
+      text-align: left;
+    }
+    
+    .sig-line {
+      font-family: 'Great Vibes', cursive, 'Inter', sans-serif;
+      font-size: 24px;
+      color: #1e293b;
+      border-bottom: 1.5px solid #d97706;
+      padding-bottom: 2px;
+      width: 200px;
+      text-align: center;
+    }
+    
+    .sig-title {
+      font-size: 10px;
+      color: #78350f;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 6px;
+      text-align: center;
+    }
+    
+    .seal-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .seal-circle {
+      width: 75px;
+      height: 75px;
+      background-color: #fbbf24;
+      border: 4px double #d97706;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 4px 10px rgba(217, 119, 6, 0.2);
+    }
+    
+    .seal-text {
+      font-size: 9px;
+      font-weight: 850;
+      color: #92400e;
+      margin-top: 6px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    
+    .date-block {
+      text-align: right;
+    }
+    
+    .date-val {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      color: #1e293b;
+      border-bottom: 1.5px solid #d97706;
+      padding-bottom: 5px;
+      width: 150px;
+      text-align: center;
+    }
+    
+    .date-title {
+      font-size: 10px;
+      color: #78350f;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 6px;
+      text-align: center;
+    }
+    
+    .print-controls {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 1000;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      backdrop-filter: blur(4px);
+    }
+    
+    .print-btn {
+      background-color: #fbbf24;
+      color: #0f172a;
+      border: none;
+      font-weight: 800;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    
+    .print-btn:hover {
+      background-color: #f59e0b;
+      transform: scale(1.05);
+    }
+    
+    @media print {
+      body {
+        background-color: #ffffff;
+        padding: 0;
+        margin: 0;
+        height: 100vh;
+      }
+      .print-controls {
+        display: none !important;
+      }
+      .certificate-border-outer {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        border-width: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-controls">
+    <button class="print-btn" onclick="window.print()">🖨️ Print Certificate</button>
+    <button class="print-btn" style="background-color: #e2e8f0; color: #475569;" onclick="window.close()">❌ Close Preview</button>
+  </div>
+
+  <div class="certificate-border-outer">
+    <div class="certificate-border-inner">
+      
+      <div class="logo-area">
+        <span class="logo-emoji">🐝</span>
+        <div>
+          <div class="academy-title">Honey Bees Playroom</div>
+          <div class="academy-sub">Pre-School, Daycare & Learning Centre</div>
+        </div>
+      </div>
+      
+      <div>
+        <h1 class="main-award-title">Certificate of Completion</h1>
+        <div class="award-sub">This official achievement certificate is proudly awarded to</div>
+      </div>
+      
+      <div class="recipient-name">${cName}</div>
+      
+      <div class="achievement-details">
+        for demonstrating outstanding dedication, creative focus, and milestone completion under the guidance of Beatrice Learning Systems by successfully unlocking the
+        <br>
+        <span class="achievement-highlight">"${milestoneTitle}"</span>
+        <br>
+        <span style="font-size: 12px; color: #92400e; font-style: italic; margin-top: 4px; display: block;">
+          ${milestoneDesc}
+        </span>
+      </div>
+      
+      <div class="certificate-footer">
+        <div class="signature-block">
+          <div class="sig-line">Beatrice AI</div>
+          <div class="sig-title">Preschool Director of Beatrice Labs</div>
+        </div>
+        
+        <div class="seal-block">
+          <div class="seal-circle">🐝</div>
+          <div class="seal-text">HONEY BEES SEAL</div>
+        </div>
+        
+        <div class="date-block">
+          <div class="date-val">${dStr}</div>
+          <div class="date-title">Date Earned</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+</body>
+</html>
+`;
+};
+
+interface Milestone {
+  id: string;
+  title: string;
+  description: string;
+  badge: string;
+  requirementDesc: string;
+  checkUnlocked: (points: number, completed: string[], streak: number) => boolean;
+}
+
+const MILESTONES: Milestone[] = [
+  {
+    id: "ms-alpha-explorer",
+    title: "Alphabet Explorer",
+    description: "Successfully completed tracing 3 uppercase letters inside the Tracing Slate!",
+    badge: "🍎",
+    requirementDesc: "Trace 3 alphabet letters",
+    checkUnlocked: (_, completed) => completed.filter(id => id.startsWith("tracing-validated-") || id.startsWith("letter-")).length >= 3
+  },
+  {
+    id: "ms-points-50",
+    title: "Golden Star Earner",
+    description: "Amassed 50 or more Honeybee points from active playroom practices!",
+    badge: "🌟",
+    requirementDesc: "Reach 50 Honeybee Points",
+    checkUnlocked: (points) => points >= 50
+  },
+  {
+    id: "ms-streak-3",
+    title: "Dedicated Tracing Streak",
+    description: "Maintained a perfect 3-day learning practice streak inside the playrooms!",
+    badge: "🔥",
+    requirementDesc: "Earn a 3-day practice streak",
+    checkUnlocked: (_, __, streak) => streak >= 3
+  },
+  {
+    id: "ms-vocab-champ",
+    title: "Vocabulary Champion",
+    description: "Mastered spelling and tracing of 3 animal flashcards in the vocabulary zone!",
+    badge: "🎨",
+    requirementDesc: "Complete 3 Vocabulary Cards",
+    checkUnlocked: (_, completed) => completed.filter(id => id.startsWith("vocab-")).length >= 3
+  },
+  {
+    id: "ms-telugu-novice",
+    title: "Telugu Language Novice",
+    description: "Mastered correct sound association and tracing of 3 Telugu vowels (అచ్చులు)!",
+    badge: "🕉️",
+    requirementDesc: "Complete 3 Telugu letters",
+    checkUnlocked: (_, completed) => completed.filter(id => id.startsWith("telugu-")).length >= 3
+  },
+  {
+    id: "ms-story-lover",
+    title: "Avid Story Listener",
+    description: "Listened to Beatrice read-along voice overs and successfully answered a story comprehension quiz!",
+    badge: "📚",
+    requirementDesc: "Complete 1 story reading quiz",
+    checkUnlocked: (_, completed) => completed.filter(id => id.startsWith("story-quiz-")).length >= 1
+  },
+  {
+    id: "ms-playroom-champ",
+    title: "Playroom Champion",
+    description: "Beat a cognitive Memory Flip challenge or doodled on the Magic Kids Sandbox!",
+    badge: "🎮",
+    requirementDesc: "Complete a memory game or sandbox doodle",
+    checkUnlocked: (_, completed) => completed.includes("doodle-board") || completed.some(id => id.startsWith("memory-game-"))
+  }
+];
+
 export default function Playroom() {
   const [activePlayTab, setActivePlayTab] = useState<"alphabet" | "numbers" | "words" | "telugu" | "stories" | "games" | "parents">("alphabet");
   
@@ -339,6 +774,21 @@ export default function Playroom() {
   const [hasRegistered, setHasRegistered] = useState<boolean>(() => !!localStorage.getItem("kid_name"));
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
 
+  // Daily Tracing Streak State (consecutive days of practicing alphabet tracing)
+  const [tracingStreak, setTracingStreak] = useState<number>(() => {
+    const today = getTodayDateString();
+    const yesterday = getYesterdayDateString();
+    const lastDate = localStorage.getItem("kid_last_practice_date") || "";
+    const savedStreak = Number(localStorage.getItem("kid_tracing_streak")) || 0;
+
+    if (lastDate === today || lastDate === yesterday) {
+      return savedStreak;
+    } else {
+      // Streak broken since they missed a day
+      return 0;
+    }
+  });
+
   // Track task completions
   const [completedActivities, setCompletedActivities] = useState<string[]>(() => {
     try {
@@ -348,6 +798,34 @@ export default function Playroom() {
     }
   });
 
+  const [unlockedMilestones, setUnlockedMilestones] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("unlocked_milestones") || "[]");
+    } catch {
+      return [];
+    }
+  });
+  
+  const [currentMilestoneCelebration, setCurrentMilestoneCelebration] = useState<Milestone | null>(null);
+
+  // Automatic Milestone & Achievement Checker
+  useEffect(() => {
+    if (!kidName) return; // Do not trigger for anonymous users before register
+    
+    const newlyUnlocked = MILESTONES.filter(ms => {
+      if (unlockedMilestones.includes(ms.id)) return false;
+      return ms.checkUnlocked(points, completedActivities, tracingStreak);
+    });
+
+    if (newlyUnlocked.length > 0) {
+      const nextMilestone = newlyUnlocked[0];
+      const updatedUnlocked = [...unlockedMilestones, nextMilestone.id];
+      setUnlockedMilestones(updatedUnlocked);
+      localStorage.setItem("unlocked_milestones", JSON.stringify(updatedUnlocked));
+      setCurrentMilestoneCelebration(nextMilestone);
+    }
+  }, [points, completedActivities, tracingStreak, kidName]);
+
   const saveProfile = (name: string, age: string) => {
     localStorage.setItem("kid_name", name);
     localStorage.setItem("kid_age", age);
@@ -355,6 +833,28 @@ export default function Playroom() {
     setKidName(name);
     setKidAgeGroup(age);
     setHasRegistered(true);
+  };
+
+  const recordAlphabetPractice = () => {
+    const today = getTodayDateString();
+    const yesterday = getYesterdayDateString();
+    const lastDate = localStorage.getItem("kid_last_practice_date") || "";
+    let currentStreak = Number(localStorage.getItem("kid_tracing_streak")) || 0;
+
+    if (lastDate === today) {
+      // Already practiced today, streak remains unchanged
+      return;
+    } else if (lastDate === yesterday) {
+      // Practiced yesterday, streak incremented
+      currentStreak += 1;
+    } else {
+      // Missed yesterday or first practice, start streak at 1
+      currentStreak = 1;
+    }
+
+    setTracingStreak(currentStreak);
+    localStorage.setItem("kid_tracing_streak", String(currentStreak));
+    localStorage.setItem("kid_last_practice_date", today);
   };
 
   const addPoints = (amount: number, activityId: string) => {
@@ -409,12 +909,12 @@ export default function Playroom() {
   };
 
   return (
-    <div className="bg-yellow-50/20 min-h-screen py-8 sm:py-12 relative overflow-hidden font-sans">
+    <div className="bg-yellow-50/20 dark:bg-slate-950 min-h-screen py-8 sm:py-12 relative overflow-hidden font-sans transition-colors duration-350">
       
       {/* Cartoon clouds and sunshine backdrop decorators */}
-      <div className="absolute top-10 left-10 w-32 h-16 bg-white/70 rounded-full blur-md animate-pulse pointer-events-none" />
-      <div className="absolute top-24 right-16 w-24 h-12 bg-white/60 rounded-full blur-md pointer-events-none" />
-      <div className="absolute bottom-20 left-6 w-28 h-14 bg-white/50 rounded-full blur-lg pointer-events-none" />
+      <div className="absolute top-10 left-10 w-32 h-16 bg-white/70 dark:bg-slate-900/30 rounded-full blur-md animate-pulse pointer-events-none" />
+      <div className="absolute top-24 right-16 w-24 h-12 bg-white/60 dark:bg-slate-900/30 rounded-full blur-md pointer-events-none" />
+      <div className="absolute bottom-20 left-6 w-28 h-14 bg-white/50 dark:bg-slate-900/30 rounded-full blur-lg pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-8">
         
@@ -423,14 +923,14 @@ export default function Playroom() {
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white border-4 border-yellow-300 rounded-[36px] p-6 sm:p-10 text-center shadow-xl max-w-xl mx-auto space-y-6"
+            className="bg-white dark:bg-slate-900 border-4 border-yellow-300 rounded-[36px] p-6 sm:p-10 text-center shadow-xl max-w-xl mx-auto space-y-6"
           >
             <div className="text-6xl animate-bounce">🎈🧸🍯</div>
             <div className="space-y-2">
-              <h2 className="font-display font-black text-3xl text-slate-900 tracking-tight">
+              <h2 className="font-display font-black text-3xl text-slate-900 dark:text-white tracking-tight">
                 Welcome to Honey Bees Playroom!
               </h2>
-              <p className="text-slate-500 text-xs sm:text-sm">
+              <p className="text-slate-500 dark:text-slate-350 text-xs sm:text-sm">
                 Enter your child's nickname to customize games, track star badges, and check learning reports!
               </p>
             </div>
@@ -492,13 +992,23 @@ export default function Playroom() {
                 🐝
               </span>
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="font-display font-black text-xl sm:text-2xl text-slate-900 tracking-tight">
                     Hello, {kidName}! 👋
                   </h1>
                   <span className="text-[10px] font-extrabold bg-slate-900 text-yellow-400 px-2 py-0.5 rounded-full">
                     Ages {kidAgeGroup}
                   </span>
+                  {tracingStreak > 0 && (
+                    <motion.span
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="text-[10px] font-black bg-orange-600 text-white px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm border border-orange-500/30 animate-pulse"
+                      title="Daily Alphabet Tracing Streak!"
+                    >
+                      🔥 {tracingStreak}-Day Streak
+                    </motion.span>
+                  )}
                 </div>
                 <p className="text-xs text-slate-950/80 font-medium font-sans">
                   Ready to earn some golden stars today? Pick any playground below!
@@ -523,8 +1033,11 @@ export default function Playroom() {
                       localStorage.removeItem("kid_age");
                       localStorage.removeItem("kid_points");
                       localStorage.removeItem("completed_activities");
+                      localStorage.removeItem("kid_tracing_streak");
+                      localStorage.removeItem("kid_last_practice_date");
                       setPoints(10);
                       setCompletedActivities([]);
+                      setTracingStreak(0);
                       setHasRegistered(false);
                       setShowResetConfirm(false);
                     }}
@@ -591,7 +1104,14 @@ export default function Playroom() {
               exit={{ opacity: 0, y: -15 }}
               className="space-y-8"
             >
-              <AlphabetSection onCompleteActivity={(id) => addPoints(5, id)} speakText={speakText} />
+              <AlphabetSection 
+                onCompleteActivity={(id) => {
+                  addPoints(5, id);
+                  recordAlphabetPractice();
+                }} 
+                speakText={speakText} 
+                tracingStreak={tracingStreak}
+              />
             </motion.div>
           )}
 
@@ -681,13 +1201,93 @@ export default function Playroom() {
               exit={{ opacity: 0, y: -15 }}
               className="space-y-8"
             >
-              <ParentsSection points={points} completed={completedActivities} ageGroup={kidAgeGroup} />
+              <ParentsSection 
+                points={points} 
+                completed={completedActivities} 
+                ageGroup={kidAgeGroup} 
+                kidName={kidName} 
+                tracingStreak={tracingStreak}
+              />
             </motion.div>
           )}
 
         </AnimatePresence>
 
       </div>
+
+      {/* Dynamic Celebration & Print Milestone Certificate Modal */}
+      <AnimatePresence>
+        {currentMilestoneCelebration && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50 overflow-y-auto font-sans text-left"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 30 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 30 }}
+              className="bg-white rounded-[36px] border-4 border-amber-400 p-8 shadow-2xl max-w-2xl w-full text-center space-y-6 relative overflow-hidden"
+            >
+              {/* Confetti styling blocks */}
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400" />
+              
+              <div className="text-6xl animate-bounce mt-4 select-none">🎉</div>
+              
+              <div className="space-y-2">
+                <span className="text-[10px] font-black bg-amber-100 text-amber-800 px-3 py-1 rounded-full uppercase tracking-wider font-mono">
+                  New Milestone Unlocked! 🏆
+                </span>
+                <h3 className="font-display font-black text-2xl text-slate-900 mt-2">
+                  Congratulations, {kidName}!
+                </h3>
+                <p className="text-sm font-medium text-amber-600 max-w-md mx-auto">
+                  You just earned the <strong className="font-display text-amber-700">{currentMilestoneCelebration.title}</strong> badge!
+                </p>
+              </div>
+
+              <div className="bg-amber-50/50 border-2 border-dashed border-amber-200 p-5 rounded-2xl space-y-3 relative max-w-md mx-auto">
+                <span className="text-5xl block select-none">{currentMilestoneCelebration.badge}</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                  {currentMilestoneCelebration.description}
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2 max-w-md mx-auto">
+                <button
+                  onClick={() => {
+                    const htmlContent = generateCertificateHTML(
+                      kidName || "Little Bee",
+                      currentMilestoneCelebration.title,
+                      currentMilestoneCelebration.description
+                    );
+                    const printWindow = window.open("", "_blank");
+                    if (printWindow) {
+                      printWindow.document.write(htmlContent);
+                      printWindow.document.close();
+                      setTimeout(() => {
+                        printWindow.focus();
+                        printWindow.print();
+                      }, 500);
+                    }
+                  }}
+                  className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-display font-black text-xs py-3.5 px-6 rounded-2xl cursor-pointer shadow-lg shadow-amber-500/20 transition-all hover:scale-102 active:scale-98 flex items-center justify-center gap-1.5"
+                >
+                  🖨️ Print My Certificate!
+                </button>
+                <button
+                  onClick={() => setCurrentMilestoneCelebration(null)}
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-display font-black text-xs py-3.5 px-6 rounded-2xl cursor-pointer transition-all hover:scale-102 active:scale-98"
+                >
+                  Keep Playing! 🚀
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
@@ -850,10 +1450,149 @@ function LetterStrokeAnimator({ letter, speakText }: { letter: string; speakText
   );
 }
 
-function AlphabetSection({ onCompleteActivity, speakText }: { onCompleteActivity: (id: string) => void; speakText: (txt: string) => void }) {
+function AlphabetSection({ 
+  onCompleteActivity, 
+  speakText,
+  tracingStreak
+}: { 
+  onCompleteActivity: (id: string) => void; 
+  speakText: (txt: string) => void;
+  tracingStreak: number
+}) {
   const [selectedLetter, setSelectedLetter] = useState<AlphabetLetter>(ALPHABET_LIST[0]);
   const [isPlayingVideo, setIsPlayingVideo] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<"sandbox" | "guided">("sandbox");
+
+  // Dynamic Playroom Videos States
+  const [playroomVideos, setPlayroomVideos] = useState<Record<string, Array<{ id: string; title: string; url: string }>>>({});
+  const [activeVideoId, setActiveVideoId] = useState<string>("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [demoAdminOverride, setDemoAdminOverride] = useState(false);
+  
+  // Video Add Form State
+  const [newVideoTitle, setNewVideoTitle] = useState("");
+  const [newVideoUrl, setNewVideoUrl] = useState("");
+  const [formError, setFormError] = useState("");
+  const [formSuccess, setFormSuccess] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch playroom videos from server on mount
+  const fetchPlayroomVideos = () => {
+    fetch("/api/playroom/videos")
+      .then(res => res.json())
+      .then(data => {
+        setPlayroomVideos(data);
+      })
+      .catch(err => console.error("Failed to load playroom videos from API:", err));
+  };
+
+  useEffect(() => {
+    fetchPlayroomVideos();
+
+    // Check if authenticated user is admin
+    try {
+      const userStr = localStorage.getItem("honeybees_current_user");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        setIsAdmin(user?.role === "admin");
+      } else {
+        setIsAdmin(localStorage.getItem("honeybees_admin_authenticated") === "true");
+      }
+    } catch (e) {
+      setIsAdmin(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    setFormError("");
+    setFormSuccess("");
+    setNewVideoTitle("");
+    setNewVideoUrl("");
+    setActiveVideoId("");
+  }, [selectedLetter]);
+
+  const getEmbedUrl = (url: string) => {
+    if (!url) return "";
+    let videoId = "";
+    if (url.includes("youtu.be/")) {
+      videoId = url.split("youtu.be/")[1]?.split("?")[0];
+    } else if (url.includes("watch?v=")) {
+      videoId = url.split("watch?v=")[1]?.split("&")[0];
+    } else if (url.includes("embed/")) {
+      videoId = url.split("embed/")[1]?.split("?")[0];
+    }
+    
+    if (videoId) {
+      return `https://www.youtube-nocookie.com/embed/${videoId}`;
+    }
+    return url;
+  };
+
+  const handleAddVideo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError("");
+    setFormSuccess("");
+    if (!newVideoTitle.trim() || !newVideoUrl.trim()) {
+      setFormError("Both title and video URL are required.");
+      return;
+    }
+
+    const cleanUrl = getEmbedUrl(newVideoUrl.trim());
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/admin/playroom/videos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          letter: selectedLetter.letter,
+          title: newVideoTitle.trim(),
+          url: cleanUrl
+        })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setFormSuccess("Phonics lesson video added successfully! 🐝");
+        setNewVideoTitle("");
+        setNewVideoUrl("");
+        fetchPlayroomVideos();
+      } else {
+        setFormError(data.error || "Failed to add video.");
+      }
+    } catch (err) {
+      setFormError("Connection error to server.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteVideo = async (videoId: string) => {
+    setFormError("");
+    setFormSuccess("");
+    if (!confirm("Are you sure you want to delete this educational song video from the playlist?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/playroom/videos/${selectedLetter.letter}/${videoId}`, {
+        method: "DELETE"
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setFormSuccess("Video removed from library.");
+        fetchPlayroomVideos();
+        if (activeVideoId === videoId) {
+          setActiveVideoId("");
+        }
+      } else {
+        setFormError(data.error || "Failed to delete video.");
+      }
+    } catch (err) {
+      setFormError("Connection error.");
+    }
+  };
 
   // Canvas Tracing States
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -907,6 +1646,7 @@ function AlphabetSection({ onCompleteActivity, speakText }: { onCompleteActivity
     setTraceSuccess(false);
     setDrawnPaths([]);
     setCurrentPath([]);
+    setIsPlayingVideo(false);
   }, [selectedLetter]);
 
   useEffect(() => {
@@ -1048,8 +1788,10 @@ function AlphabetSection({ onCompleteActivity, speakText }: { onCompleteActivity
         clientY = e.clientY;
       }
 
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
+      const width = rect.width || canvas.width;
+      const height = rect.height || canvas.height;
+      const x = ((clientX - rect.left) / width) * canvas.width;
+      const y = ((clientY - rect.top) / height) * canvas.height;
 
       setIsDrawing(true);
       setCurrentPath([{ x, y }]);
@@ -1076,8 +1818,10 @@ function AlphabetSection({ onCompleteActivity, speakText }: { onCompleteActivity
         clientY = e.clientY;
       }
 
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
+      const width = rect.width || canvas.width;
+      const height = rect.height || canvas.height;
+      const x = ((clientX - rect.left) / width) * canvas.width;
+      const y = ((clientY - rect.top) / height) * canvas.height;
 
       setCurrentPath((prev) => [...prev, { x, y }]);
       checkProximity(x, y, canvas.width, canvas.height);
@@ -1115,7 +1859,24 @@ function AlphabetSection({ onCompleteActivity, speakText }: { onCompleteActivity
       
       {/* 26 Letters Selector Board */}
       <div className="lg:col-span-1 bg-white border-4 border-rose-200 rounded-[32px] p-5 shadow-sm space-y-4">
-        <h3 className="font-display font-black text-slate-900 text-sm flex items-center gap-1.5 pl-1 text-rose-600">
+        {/* Daily Tracing Streak Banner */}
+        <div className="bg-gradient-to-br from-orange-500/10 to-amber-500/10 rounded-2xl p-3.5 border border-orange-500/25 flex items-center gap-3">
+          <div className="bg-orange-500 text-white text-xl p-2 rounded-xl shadow-sm animate-pulse flex items-center justify-center shrink-0">
+            🔥
+          </div>
+          <div className="space-y-0.5">
+            <h4 className="font-display font-black text-slate-900 text-xs flex items-center gap-1.5 leading-tight">
+              {tracingStreak > 0 ? `${tracingStreak}-Day Tracing Streak!` : "Start Your Streak!"}
+            </h4>
+            <p className="text-[10px] text-slate-500 font-bold leading-normal">
+              {tracingStreak > 0 
+                ? "Awesome! Keep practicing every day to grow your streak!" 
+                : "Complete tracing a letter today to start your daily streak!"}
+            </p>
+          </div>
+        </div>
+
+        <h3 className="font-display font-black text-slate-900 text-xs flex items-center gap-1.5 pl-1 text-rose-600">
           ✨ Tap to Pronounce Letters
         </h3>
         
@@ -1217,8 +1978,8 @@ function AlphabetSection({ onCompleteActivity, speakText }: { onCompleteActivity
               <div className="relative aspect-square bg-slate-950 border-2 border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center">
                 <canvas
                   ref={canvasRef}
-                  width={250}
-                  height={250}
+                  width={500}
+                  height={500}
                   onMouseDown={startDraw}
                   onMouseMove={draw}
                   onMouseUp={stopDraw}
@@ -1298,39 +2059,190 @@ function AlphabetSection({ onCompleteActivity, speakText }: { onCompleteActivity
               </p>
             </div>
 
-            {!isPlayingVideo ? (
-              <div className="relative aspect-video bg-rose-50 rounded-2xl overflow-hidden border border-rose-100 flex flex-col items-center justify-center p-4 text-center group">
-                <div className="absolute inset-0 bg-rose-500/5 group-hover:bg-rose-500/10 transition-colors" />
-                <button
-                  onClick={() => {
-                    setIsPlayingVideo(true);
-                    onCompleteActivity(`video-${selectedLetter.letter}`);
-                  }}
-                  className="w-12 h-12 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer transition-all group-hover:scale-110 relative z-10"
-                >
-                  <Play size={20} className="fill-white ml-0.5" />
-                </button>
-                <span className="text-[10px] font-bold text-rose-700 font-mono mt-3 relative z-10">
-                  Open Safe Player
-                </span>
-              </div>
-            ) : (
-              <div className="aspect-video rounded-2xl overflow-hidden border border-slate-200 shadow-sm relative">
-                <iframe
-                  src={selectedLetter.videoUrl}
-                  title="Preschool Rhyme Lesson"
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-                <button
-                  onClick={() => setIsPlayingVideo(false)}
-                  className="absolute bottom-2 right-2 bg-slate-900/80 text-white text-[9px] font-bold px-2 py-1 rounded-md hover:bg-slate-950"
-                >
-                  Close Video
-                </button>
-              </div>
-            )}
+            {/* Dynamic playlist of videos for this letter */}
+            {(() => {
+              const currentLetterVideos = playroomVideos[selectedLetter.letter] || [
+                { id: "v-default", title: "Phonics Lesson Song", url: selectedLetter.videoUrl }
+              ];
+              const activeVideo = currentLetterVideos.find(v => v.id === activeVideoId) || currentLetterVideos[0];
+
+              return (
+                <div className="space-y-4">
+                  {currentLetterVideos.length === 0 ? (
+                    <div className="bg-slate-50 rounded-2xl p-6 border border-dashed border-slate-200 text-center flex flex-col items-center justify-center space-y-2">
+                      <span className="text-3xl">🎥</span>
+                      <h5 className="text-xs font-bold text-slate-700">No videos available</h5>
+                      <p className="text-[10px] text-slate-400">Please add an educational song video using the administrator panel below.</p>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Video Selector Playlist if there is more than 1 video */}
+                      {currentLetterVideos.length > 1 && (
+                        <div className="space-y-1.5">
+                          <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-400 block font-mono">
+                            Select Video Lesson ({currentLetterVideos.length})
+                          </span>
+                          <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto p-1 bg-slate-50 rounded-xl border border-slate-150">
+                            {currentLetterVideos.map((vid) => (
+                              <button
+                                key={vid.id}
+                                onClick={() => {
+                                  setActiveVideoId(vid.id);
+                                  setIsPlayingVideo(true);
+                                }}
+                                className={`text-[10px] font-bold px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1 cursor-pointer ${
+                                  (activeVideo?.id === vid.id)
+                                    ? "bg-rose-500 text-white border-rose-500 shadow-3xs scale-102"
+                                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                                }`}
+                              >
+                                <span>🎬</span>
+                                <span className="truncate max-w-[120px]">{vid.title}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {!isPlayingVideo ? (
+                        <div className="relative aspect-video bg-rose-50 rounded-2xl overflow-hidden border border-rose-100 flex flex-col items-center justify-center p-4 text-center group">
+                          <div className="absolute inset-0 bg-rose-500/5 group-hover:bg-rose-500/10 transition-colors" />
+                          <button
+                            onClick={() => {
+                              setIsPlayingVideo(true);
+                              onCompleteActivity(`video-${selectedLetter.letter}`);
+                            }}
+                            className="w-12 h-12 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer transition-all group-hover:scale-110 relative z-10"
+                          >
+                            <Play size={20} className="fill-white ml-0.5" />
+                          </button>
+                          <span className="text-[10px] font-black text-rose-700 font-mono mt-3 relative z-10">
+                            Play: {activeVideo?.title || "Phonics Lesson"}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="aspect-video rounded-2xl overflow-hidden border border-slate-200 shadow-sm relative">
+                          <iframe
+                            src={`${(activeVideo?.url || selectedLetter.videoUrl).replace("youtube.com", "youtube-nocookie.com")}?rel=0&modestbranding=1&autoplay=1`}
+                            title="Preschool Rhyme Lesson"
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                          <button
+                            onClick={() => setIsPlayingVideo(false)}
+                            className="absolute bottom-2 right-2 bg-slate-900/80 text-white text-[9px] font-bold px-2 py-1 rounded-md hover:bg-slate-950"
+                          >
+                            Close Video
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* Admin Controls Panel */}
+                  <div className="pt-2 border-t border-slate-100 mt-2 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 font-mono flex items-center gap-1">
+                        🛡️ Administrator Access Panel
+                      </span>
+                      
+                      {/* Admin Mode Status or Dev Bypass Toggle */}
+                      {!isAdmin ? (
+                        <button
+                          onClick={() => setDemoAdminOverride(prev => !prev)}
+                          className={`text-[9px] font-black px-2 py-0.5 rounded-full border transition-all cursor-pointer ${
+                            demoAdminOverride 
+                              ? "bg-yellow-400 text-slate-950 border-yellow-500" 
+                              : "bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200"
+                          }`}
+                        >
+                          {demoAdminOverride ? "⚡ Admin Demo Mode: ACTIVE" : "🔐 Switch to Admin (Demo)"}
+                        </button>
+                      ) : (
+                        <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                          ● Authenticated Administrator
+                        </span>
+                      )}
+                    </div>
+
+                    {(isAdmin || demoAdminOverride) ? (
+                      <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-3">
+                        <h5 className="text-[10px] font-extrabold text-slate-700 flex items-center gap-1 uppercase tracking-wide">
+                          Manage Videos for Letter "{selectedLetter.letter}"
+                        </h5>
+
+                        {/* Add Video Form */}
+                        <form onSubmit={handleAddVideo} className="space-y-2">
+                          <div className="grid grid-cols-2 gap-2">
+                            <input
+                              type="text"
+                              placeholder="Video Title (e.g. Letter A Rap)"
+                              value={newVideoTitle}
+                              onChange={(e) => setNewVideoTitle(e.target.value)}
+                              className="bg-white border border-slate-200 rounded-lg p-1.5 text-[10px] focus:outline-none focus:border-rose-400 text-slate-800 w-full"
+                            />
+                            <input
+                              type="text"
+                              placeholder="YouTube Link or Embed URL"
+                              value={newVideoUrl}
+                              onChange={(e) => setNewVideoUrl(e.target.value)}
+                              className="bg-white border border-slate-200 rounded-lg p-1.5 text-[10px] focus:outline-none focus:border-rose-400 text-slate-800 w-full"
+                            />
+                          </div>
+                          
+                          <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="w-full bg-rose-500 hover:bg-rose-600 disabled:bg-rose-300 text-white font-black text-[9.5px] py-1.5 rounded-lg flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                          >
+                            <Plus size={11} /> {isSubmitting ? "Saving..." : "Add Animated Phonics Video"}
+                          </button>
+                        </form>
+
+                        {/* Success / Error alerts */}
+                        {formError && <p className="text-[9px] text-red-600 font-bold">{formError}</p>}
+                        {formSuccess && <p className="text-[9px] text-emerald-600 font-bold">{formSuccess}</p>}
+
+                        {/* List of custom videos for the selected letter with delete buttons */}
+                        {currentLetterVideos.length > 0 && (
+                          <div className="space-y-1">
+                            <span className="text-[8px] font-extrabold text-slate-400 block uppercase font-mono">
+                              Active Playlist Library:
+                            </span>
+                            <div className="space-y-1 max-h-[120px] overflow-y-auto">
+                              {currentLetterVideos.map((vid) => (
+                                <div key={vid.id} className="flex items-center justify-between p-1.5 bg-white rounded-lg border border-slate-150 gap-2">
+                                  <div className="min-w-0 flex-1">
+                                    <p className="text-[9.5px] font-bold text-slate-700 truncate">{vid.title}</p>
+                                    <span className="text-[7.5px] text-slate-400 font-mono truncate block">{vid.url}</span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteVideo(vid.id)}
+                                    className="text-slate-400 hover:text-red-500 p-1 rounded hover:bg-slate-100 cursor-pointer shrink-0 transition-colors"
+                                    title="Delete Video"
+                                  >
+                                    <Trash2 size={12} />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-150 flex items-center gap-1.5">
+                        <span className="text-xs">🔒</span>
+                        <p className="text-[8.5px] text-slate-400 leading-normal">
+                          To modify, delete, or replace educational song videos for the letter lesson, please authenticate as <strong className="text-slate-500">administrator</strong> via the Admin Control dashboard.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
         </div>
@@ -2487,11 +3399,744 @@ function GamesSection({ onCompleteActivity }: { onCompleteActivity: (id: string)
 // =========================================================================
 // SUBSECTION: PARENT REPORT ZONE & WORK SHEET DOWNLOADS
 // =========================================================================
-function ParentsSection({ points, completed, ageGroup }: { points: number; completed: string[]; ageGroup: string }) {
+// =========================================================================
+// SUBSECTION: WORKSHEET HTML GENERATOR (PRINT OPTIMIZED)
+// =========================================================================
+const generateWorksheetHTML = (id: string, name: string, childName: string) => {
+  const cName = childName.trim() || "Little Bee";
+  const dateStr = new Date().toLocaleDateString();
   
-  // Custom generated worksheets downloadable simulator
-  const handleSimulateWorksheetDownload = (worksheetName: string) => {
-    alert(`📥 PDF Worksheet Generation Hook Successful!\nDownloading high-quality printable Activity PDF: "${worksheetName}".\nThis file is structured specifically for preschoolers aged ${ageGroup} years to trace patterns offline. ✨🍯`);
+  let mainContent = "";
+  
+  if (id === "pdf-az") {
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    let gridHTML = "";
+    letters.forEach(letter => {
+      gridHTML += `
+        <div class="letter-card">
+          <div class="letter-main">
+            <span class="letter-guided">${letter}</span>
+            <span class="letter-trace">${letter}</span>
+          </div>
+          <div class="letter-phonics">trace ${letter}</div>
+        </div>
+      `;
+    });
+    mainContent = `
+      <h2>Alphabet A-Z Tracing Activity Sheet</h2>
+      <p class="instructions">Instruction: Use a pencil to carefully trace each letter inside the dashed guides. Color the cards when finished!</p>
+      <div class="alphabet-grid">
+        ${gridHTML}
+      </div>
+    `;
+  } else if (id === "pdf-num") {
+    let rowsHTML = "";
+    for (let i = 1; i <= 10; i++) {
+      let balloons = "";
+      for (let b = 0; b < i; b++) {
+        balloons += `<span class="balloon">🎈</span>`;
+      }
+      rowsHTML += `
+        <div class="number-row">
+          <div class="num-guided">
+            <span class="num-solid">${i}</span>
+            <span class="num-trace">${i}</span>
+          </div>
+          <div class="balloons-count">
+            ${balloons}
+            <span class="count-label">(${i} ${i === 1 ? 'Balloon' : 'Balloons'})</span>
+          </div>
+        </div>
+      `;
+    }
+    mainContent = `
+      <h2>Numbers Counting & Balloon Pop Board</h2>
+      <p class="instructions">Instruction: Trace the dashed numbers with your pencil, then count and color each of the balloons next to them!</p>
+      <div class="numbers-list">
+        ${rowsHTML}
+      </div>
+    `;
+  } else if (id === "pdf-vocab") {
+    const animals = [
+      { name: "APPLE", icon: "🍎", phonetic: "Ah-pul" },
+      { name: "LION", icon: "🦁", phonetic: "Lye-on" },
+      { name: "ELEPHANT", icon: "🐘", phonetic: "Eh-lee-fant" },
+      { name: "HONEYBEE", icon: "🐝", phonetic: "Hah-nee-bee" }
+    ];
+    let cardsHTML = "";
+    animals.forEach(animal => {
+      cardsHTML += `
+        <div class="flashcard">
+          <div class="card-icon">${animal.icon}</div>
+          <div class="card-title">${animal.name}</div>
+          <div class="card-phonetic">"${animal.phonetic}"</div>
+          <div class="card-trace-word">
+            <span class="word-trace-dashed">${animal.name}</span>
+          </div>
+          <div class="cut-line">✂--- Cut along dotted line ---</div>
+        </div>
+      `;
+    });
+    mainContent = `
+      <h2>Vocabulary Animals Flashcards</h2>
+      <p class="instructions">Instruction: Ask a parent to help you cut out these flashcards. Trace the animal words and color the backgrounds!</p>
+      <div class="flashcard-grid">
+        ${cardsHTML}
+      </div>
+    `;
+  } else if (id === "pdf-telugu") {
+    const teluguVowels = [
+      { char: "అ", sound: "a", word: "అమ్మ (Amma)" },
+      { char: "ఆ", sound: "aa", word: "ఆవు (Aavu)" },
+      { char: "ఇ", sound: "i", word: "ఇల్లు (Illu)" },
+      { char: "ఈ", sound: "ii", word: "ఈల (Eela)" },
+      { char: "ఉ", sound: "u", word: "ఉడుత (Uduta)" },
+      { char: "ఊ", sound: "uu", word: "ఊయల (Ooyala)" },
+      { char: "ఋ", sound: "ru", word: "ఋషి (Rushi)" },
+      { char: "ఎ", sound: "e", word: "ఎలుక (Eluka)" },
+      { char: "ఏ", sound: "ee", word: "ఏనుగు (Eenugu)" },
+      { char: "ఐ", sound: "ai", word: "ఐదు (Aidu)" },
+      { char: "ఒ", sound: "o", word: "ఒంటె (Onte)" },
+      { char: "ఓ", sound: "oo", word: "ఓడ (Oda)" },
+      { char: "ఔ", sound: "au", word: "ఔషధం (Authadham)" },
+      { char: "అం", sound: "am", word: "అంకెలు (Ankelu)" },
+      { char: "అః", sound: "aha", word: "అంతఃపురం (Anthahpuram)" }
+    ];
+    let teluguGrid = "";
+    teluguVowels.forEach(v => {
+      teluguGrid += `
+        <div class="telugu-card">
+          <div class="telugu-char">${v.char}</div>
+          <div class="telugu-phonetic">"${v.sound}"</div>
+          <div class="telugu-word">${v.word}</div>
+          <div class="telugu-trace-box">
+            <span class="telugu-dashed">${v.char}</span>
+          </div>
+        </div>
+      `;
+    });
+    mainContent = `
+      <h2>Telugu Varnamala Vowels Writing Grid</h2>
+      <p class="instructions">Instruction: Practice writing standard Telugu vowels (అచ్చులు) inside the guide grids. Complete the dashed tracing curves!</p>
+      <div class="telugu-grid">
+        ${teluguGrid}
+      </div>
+    `;
+  }
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Honey Bees Preschool Worksheet - ${name}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;850&family=Outfit:wght@500;800;900&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #1e293b;
+      margin: 0;
+      padding: 40px;
+      background-color: #ffffff;
+      -webkit-print-color-adjust: exact;
+    }
+    
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 4px solid #facc15;
+      padding-bottom: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .logo-emoji {
+      font-size: 32px;
+    }
+    
+    .brand-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 24px;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+    }
+    
+    .brand-sub {
+      font-size: 11px;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 850;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+    
+    .meta-box {
+      font-size: 13px;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 10px 15px;
+      border-radius: 12px;
+      display: grid;
+      grid-template-columns: auto auto;
+      gap: 5px 15px;
+    }
+    
+    .meta-label {
+      font-weight: 850;
+      color: #475569;
+    }
+    
+    .meta-value {
+      color: #0f172a;
+      text-decoration: underline;
+    }
+    
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 26px;
+      margin: 0 0 10px 0;
+      color: #0f172a;
+    }
+    
+    .instructions {
+      font-size: 13px;
+      line-height: 1.5;
+      background-color: #fef9c3;
+      border-left: 4px solid #eab308;
+      padding: 12px 15px;
+      border-radius: 0 8px 8px 0;
+      color: #713f12;
+      margin-bottom: 30px;
+    }
+    
+    /* ALPHABET GRID WORKSHETS STYLE */
+    .alphabet-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+    
+    .letter-card {
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      padding: 15px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .letter-main {
+      position: relative;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .letter-guided {
+      font-size: 70px;
+      font-weight: 800;
+      color: #f1f5f9;
+      position: absolute;
+    }
+    
+    .letter-trace {
+      font-size: 70px;
+      font-weight: 800;
+      color: transparent;
+      -webkit-text-stroke: 1.5px #94a3b8;
+      position: absolute;
+      letter-spacing: 0px;
+    }
+    
+    .letter-phonics {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 10px;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 5px;
+    }
+    
+    /* NUMBERS LIST WORKSHETS STYLE */
+    .numbers-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .number-row {
+      display: flex;
+      align-items: center;
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      padding: 10px 20px;
+      gap: 30px;
+    }
+    
+    .num-guided {
+      position: relative;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .num-solid {
+      font-size: 55px;
+      font-weight: 800;
+      color: #f1f5f9;
+      position: absolute;
+    }
+    
+    .num-trace {
+      font-size: 55px;
+      font-weight: 800;
+      color: transparent;
+      -webkit-text-stroke: 1.5px #94a3b8;
+      position: absolute;
+    }
+    
+    .balloons-count {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .balloon {
+      font-size: 26px;
+    }
+    
+    .count-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #64748b;
+      margin-left: 10px;
+    }
+    
+    /* FLASHCARDS WORKSHETS STYLE */
+    .flashcard-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+    }
+    
+    .flashcard {
+      border: 3px dashed #94a3b8;
+      border-radius: 24px;
+      padding: 30px;
+      text-align: center;
+      background-color: #fafafa;
+      position: relative;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    
+    .card-icon {
+      font-size: 64px;
+      margin-bottom: 10px;
+    }
+    
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 28px;
+      color: #0f172a;
+      letter-spacing: 0.5px;
+    }
+    
+    .card-phonetic {
+      font-size: 13px;
+      color: #eab308;
+      font-weight: 800;
+      margin-top: 2px;
+      margin-bottom: 25px;
+    }
+    
+    .card-trace-word {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #e2e8f0;
+      border-radius: 12px;
+      background-color: #ffffff;
+      margin-bottom: 20px;
+    }
+    
+    .word-trace-dashed {
+      font-size: 24px;
+      font-weight: 800;
+      color: transparent;
+      -webkit-text-stroke: 1.5px #64748b;
+      letter-spacing: 3px;
+    }
+    
+    .cut-line {
+      font-size: 10px;
+      color: #cbd5e1;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-top: 15px;
+    }
+    
+    /* TELUGU GRID WORKSHETS STYLE */
+    .telugu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    
+    .telugu-card {
+      border: 2px dashed #cbd5e1;
+      border-radius: 18px;
+      padding: 15px;
+      text-align: center;
+      background-color: #fafafa;
+    }
+    
+    .telugu-char {
+      font-size: 38px;
+      font-weight: 800;
+      color: #475569;
+      margin-bottom: 2px;
+    }
+    
+    .telugu-phonetic {
+      font-size: 12px;
+      color: #10b981;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+    
+    .telugu-word {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+    
+    .telugu-trace-box {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed #e2e8f0;
+      border-radius: 10px;
+      background-color: #ffffff;
+    }
+    
+    .telugu-dashed {
+      font-size: 38px;
+      font-weight: 800;
+      color: transparent;
+      -webkit-text-stroke: 1px #94a3b8;
+    }
+    
+    .footer {
+      margin-top: 50px;
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 15px;
+    }
+    
+    .print-controls {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 30px;
+      background-color: #f1f5f9;
+      padding: 15px;
+      border-radius: 16px;
+    }
+    
+    .print-btn {
+      background-color: #fbbf24;
+      color: #0f172a;
+      border: none;
+      font-weight: 800;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+    }
+    
+    .print-btn:hover {
+      background-color: #f59e0b;
+    }
+    
+    /* Certificate Style Box */
+    .certificate-container {
+      border: 10px double #fbbf24;
+      background-color: #fffbeb;
+      padding: 40px;
+      text-align: center;
+      border-radius: 20px;
+      margin-top: 30px;
+      position: relative;
+    }
+    
+    .certificate-badge {
+      font-size: 60px;
+      margin-bottom: 15px;
+    }
+    
+    .certificate-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 32px;
+      color: #92400e;
+      letter-spacing: 2px;
+      margin: 0 0 10px 0;
+    }
+    
+    .certificate-subtitle {
+      font-size: 14px;
+      color: #78350f;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    
+    .certificate-student-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 36px;
+      color: #d97706;
+      border-bottom: 2px dashed #f59e0b;
+      display: inline-block;
+      padding-bottom: 5px;
+      margin: 10px 0 20px 0;
+      font-weight: 800;
+    }
+    
+    .certificate-body {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #78350f;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .certificate-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 40px;
+      padding: 0 20px;
+    }
+    
+    .signature-block {
+      text-align: left;
+    }
+    
+    .sig-line {
+      font-family: 'Outfit', sans-serif;
+      font-weight: bold;
+      font-size: 18px;
+      color: #1e293b;
+      border-bottom: 1px solid #94a3b8;
+      padding-bottom: 4px;
+      width: 180px;
+    }
+    
+    .sig-title {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 5px;
+    }
+    
+    .seal-block {
+      text-align: right;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+      }
+      .print-controls {
+        display: none !important;
+      }
+      .page-break {
+        page-break-before: always;
+        clear: both;
+        height: 0;
+        border: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-controls">
+    <button class="print-btn" onclick="window.print()">🖨️ Click to Print Complete Trace & Reward Pack</button>
+  </div>
+
+  <div class="header-container">
+    <div class="logo-area">
+      <span class="logo-emoji">🐝</span>
+      <div>
+        <div class="brand-name">Honey Bees Preschool</div>
+        <div class="brand-sub">Curriculum & Sandbox Learning</div>
+      </div>
+    </div>
+    
+    <div class="meta-box">
+      <span class="meta-label">Child Name:</span>
+      <span class="meta-value">${cName}</span>
+      
+      <span class="meta-label">Date Generated:</span>
+      <span class="meta-value">${dateStr}</span>
+    </div>
+  </div>
+
+  <div class="content-body">
+    ${mainContent}
+  </div>
+
+  <div class="footer">
+    🐝 Honey Bees Academy • Page 1 of 2 • Printable Offline Activity Pack
+  </div>
+
+  <!-- Page Break to Page 2 -->
+  <div class="page-break"></div>
+
+  <div class="header-container" style="margin-top: 40px;">
+    <div class="logo-area">
+      <span class="logo-emoji">🐝</span>
+      <div>
+        <div class="brand-name">Honey Bees Preschool</div>
+        <div class="brand-sub">Curriculum & Sandbox Learning</div>
+      </div>
+    </div>
+    
+    <div class="meta-box">
+      <span class="meta-label">Star Student:</span>
+      <span class="meta-value">${cName}</span>
+      
+      <span class="meta-label">Earned Date:</span>
+      <span class="meta-value">${dateStr}</span>
+    </div>
+  </div>
+
+  <div class="certificate-container">
+    <div class="certificate-badge">🏆</div>
+    <h1 class="certificate-title">CERTIFICATE OF MASTERY</h1>
+    <p class="certificate-subtitle">This official certificate is proudly awarded to:</p>
+    
+    <h2 class="certificate-student-name">${cName}</h2>
+    
+    <p class="certificate-body">
+      for demonstrating outstanding dedication, creative focus, and fine motor precision by successfully completing the physical tracing activities, counting guides, and preschool development tasks for the
+      <br>
+      <strong>"${name}"</strong> tracing challenge!
+    </p>
+
+    <div class="certificate-footer">
+      <div class="signature-block">
+        <div class="sig-line">Beatrice AI</div>
+        <div class="sig-title">Preschool Director of Beatrice Learning Lab</div>
+      </div>
+      <div class="seal-block">
+        <span style="font-size: 38px;">⭐</span>
+        <div style="font-weight: 850; font-size: 11px; margin-top: 5px; color: #d97706;">OFFICIAL SEAL</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer" style="margin-top: 80px;">
+    🐝 Honey Bees Academy • Page 2 of 2 • Learning Rewards System
+  </div>
+
+</body>
+</html>
+  `;
+};
+
+// =========================================================================
+// SUBSECTION: PARENT REPORT ZONE & WORK SHEET DOWNLOADS
+// =========================================================================
+function ParentsSection({ 
+  points, 
+  completed, 
+  ageGroup,
+  kidName = "",
+  tracingStreak = 0
+}: { 
+  points: number; 
+  completed: string[]; 
+  ageGroup: string;
+  kidName?: string;
+  tracingStreak?: number;
+}) {
+  const [activePreviewSheet, setActivePreviewSheet] = useState<{ name: string; size: string; id: string } | null>(null);
+  const [childName, setChildName] = useState(kidName || "");
+  const [zoom, setZoom] = useState(100);
+  const [rotation, setRotation] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activePage, setActivePage] = useState(1);
+
+  const [customCertName, setCustomCertName] = useState(kidName || "");
+  const [customCertTitle, setCustomCertTitle] = useState("");
+  const [customCertDesc, setCustomCertDesc] = useState("");
+
+  useEffect(() => {
+    if (kidName) {
+      setCustomCertName(kidName);
+      setChildName(kidName);
+    }
+  }, [kidName]);
+
+  useEffect(() => {
+    if (activePreviewSheet) {
+      setZoom(100);
+      setRotation(0);
+      setSearchQuery("");
+      setActivePage(1);
+    }
+  }, [activePreviewSheet]);
+
+  // Programmatic worksheet download generator
+  const handleDownloadWorksheet = (sheetId: string, sheetName: string) => {
+    const htmlContent = generateWorksheetHTML(sheetId, sheetName, childName);
+    const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${sheetName.replace(/\s+/g, "_")}_Worksheet.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Direct print-window opener
+  const handlePrintWorksheet = (sheetId: string, sheetName: string) => {
+    const htmlContent = generateWorksheetHTML(sheetId, sheetName, childName);
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+      }, 500);
+    } else {
+      // Fallback to downloading if popup is blocked
+      handleDownloadWorksheet(sheetId, sheetName);
+    }
   };
 
   const getRecommendations = () => {
@@ -2672,7 +4317,7 @@ function ParentsSection({ points, completed, ageGroup }: { points: number; compl
           ].map((sheet) => (
             <button
               key={sheet.id}
-              onClick={() => handleSimulateWorksheetDownload(sheet.name)}
+              onClick={() => setActivePreviewSheet(sheet)}
               className="w-full text-left p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors flex items-center justify-between gap-3 group cursor-pointer"
             >
               <div className="min-w-0">
@@ -2700,6 +4345,531 @@ function ParentsSection({ points, completed, ageGroup }: { points: number; compl
           </div>
         </div>
       </div>
+
+      {/* Row 2: Milestones & Printable Certificate Center (Spanning all 3 columns) */}
+      <div className="lg:col-span-3 bg-white border-4 border-slate-200 rounded-[32px] p-6 shadow-sm space-y-6">
+        <div>
+          <span className="text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+            🏆 Milestone Badges & Printable Certificate Center
+          </span>
+          <h3 className="font-display font-black text-slate-900 text-sm mt-3">
+            Child Achievement Milestones
+          </h3>
+          <p className="text-xs text-slate-500 mt-1 leading-relaxed font-sans">
+            Track specific learning milestones unlocked by your child. Click on any unlocked badge to immediately preview and print their customized Certificate of Completion!
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-6 font-sans">
+          {/* Left/Middle: Milestones Grid */}
+          <div className="lg:col-span-2 grid sm:grid-cols-2 gap-4">
+            {MILESTONES.map((ms) => {
+              const isUnlocked = ms.checkUnlocked(points, completed, tracingStreak);
+              return (
+                <div 
+                  key={ms.id} 
+                  className={`p-4 rounded-2xl border-2 transition-all flex flex-col justify-between gap-3 ${
+                    isUnlocked 
+                      ? "bg-amber-50/50 border-amber-200 hover:border-amber-300 shadow-3xs" 
+                      : "bg-slate-50/50 border-slate-100 opacity-60"
+                  }`}
+                >
+                  <div className="flex gap-3 items-start">
+                    <span className={`text-3xl p-2.5 rounded-xl block ${isUnlocked ? 'bg-amber-100' : 'bg-slate-200'}`}>
+                      {ms.badge}
+                    </span>
+                    <div>
+                      <h5 className="font-display font-black text-slate-800 text-xs">
+                        {ms.title}
+                      </h5>
+                      <p className="text-[10px] text-slate-500 mt-0.5 leading-relaxed">
+                        {ms.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2 pt-2 border-t border-dashed border-slate-200/60">
+                    <span className="text-[9px] text-slate-400 font-mono font-bold">
+                      Req: {ms.requirementDesc}
+                    </span>
+                    {isUnlocked ? (
+                      <button
+                        onClick={() => {
+                          const htmlContent = generateCertificateHTML(childName || kidName || "Little Bee", ms.title, ms.description);
+                          const printWindow = window.open("", "_blank");
+                          if (printWindow) {
+                            printWindow.document.write(htmlContent);
+                            printWindow.document.close();
+                            setTimeout(() => {
+                              printWindow.focus();
+                              printWindow.print();
+                            }, 500);
+                          }
+                        }}
+                        className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-display font-black text-[10px] px-3 py-1.5 rounded-xl cursor-pointer shadow-3xs transition-all hover:scale-105 active:scale-95 flex items-center gap-1 shrink-0"
+                      >
+                        🖨️ Print Certificate
+                      </button>
+                    ) : (
+                      <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">
+                        🔒 Locked
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Right: Custom Certificate Generator */}
+          <div className="lg:col-span-1 bg-amber-50/40 border-2 border-dashed border-amber-200 rounded-2xl p-5 space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">✍️</span>
+                <h4 className="font-display font-black text-slate-950 text-xs uppercase tracking-wider">
+                  Custom Certificate Designer
+                </h4>
+              </div>
+              <p className="text-[10px] text-slate-500 leading-relaxed font-sans">
+                Create and print a custom learning certificate for any personalized home achievement or daily task completed!
+              </p>
+
+              <div className="space-y-2.5 pt-1">
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">
+                    Child's Name
+                  </label>
+                  <input
+                    type="text"
+                    value={customCertName}
+                    onChange={(e) => setCustomCertName(e.target.value)}
+                    placeholder="e.g. Little Bee"
+                    className="w-full px-3 py-2 rounded-xl border-2 border-slate-200 focus:border-amber-400 outline-none text-xs font-bold text-slate-800 bg-white transition-colors"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">
+                    Achievement Title
+                  </label>
+                  <input
+                    type="text"
+                    value={customCertTitle}
+                    onChange={(e) => setCustomCertTitle(e.target.value)}
+                    placeholder="e.g. Perfect Bedtime Listening"
+                    className="w-full px-3 py-2 rounded-xl border-2 border-slate-200 focus:border-amber-400 outline-none text-xs font-bold text-slate-800 bg-white transition-colors"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">
+                    Achievement Details
+                  </label>
+                  <textarea
+                    value={customCertDesc}
+                    onChange={(e) => setCustomCertDesc(e.target.value)}
+                    placeholder="For showing perfect patience and listening beautifully to the Thirsty Crow story read-along."
+                    rows={3}
+                    className="w-full px-3 py-2 rounded-xl border-2 border-slate-200 focus:border-amber-400 outline-none text-xs font-medium text-slate-700 bg-white transition-colors resize-none leading-relaxed"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                const htmlContent = generateCertificateHTML(
+                  customCertName || childName || kidName || "Little Bee",
+                  customCertTitle || "Super Star Accomplishment",
+                  customCertDesc || "For demonstrating incredible enthusiasm and mastering critical early development tasks."
+                );
+                const printWindow = window.open("", "_blank");
+                if (printWindow) {
+                  printWindow.document.write(htmlContent);
+                  printWindow.document.close();
+                  setTimeout(() => {
+                    printWindow.focus();
+                    printWindow.print();
+                  }, 500);
+                }
+              }}
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-display font-black text-xs py-3 rounded-xl cursor-pointer shadow-sm transition-all hover:scale-102 active:scale-98 text-center flex items-center justify-center gap-1.5 mt-3"
+            >
+              🎓 Print Custom Certificate
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Worksheet Live Preview & Customization Modal Overlay */}
+      <AnimatePresence>
+        {activePreviewSheet && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50 overflow-y-auto"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              className="bg-white rounded-[32px] border-4 border-slate-300 w-full max-w-5xl p-6 shadow-2xl relative flex flex-col md:flex-row gap-6 max-h-[90vh] overflow-y-auto"
+            >
+              
+              {/* Close Button top-right */}
+              <button 
+                onClick={() => setActivePreviewSheet(null)}
+                className="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 text-slate-600 p-2.5 rounded-full transition-colors cursor-pointer z-10"
+              >
+                <X size={16} />
+              </button>
+
+              {/* Left Side: Customize & Actions */}
+              <div className="md:w-1/3 flex flex-col justify-between py-2 shrink-0">
+                <div className="space-y-4">
+                  <div className="bg-yellow-100 text-yellow-800 font-mono text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider inline-block">
+                    Printable Creator Zone
+                  </div>
+                  
+                  <h4 className="font-display font-black text-slate-900 text-lg leading-tight">
+                    {activePreviewSheet.name}
+                  </h4>
+                  
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Customize your child's worksheet live. Enter their name below to print a personalized homework tracing sheet!
+                  </p>
+
+                  {/* Customizer field */}
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-extrabold text-slate-600 uppercase tracking-widest block">
+                      Child's Name
+                    </label>
+                    <input
+                      type="text"
+                      value={childName}
+                      onChange={(e) => setChildName(e.target.value)}
+                      placeholder="e.g. Little Bee"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-yellow-400 outline-none text-xs font-bold text-slate-800 transition-colors"
+                    />
+                  </div>
+                  
+                  <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-150 text-[10px] leading-relaxed text-slate-500 space-y-1.5">
+                    <p className="font-bold text-slate-700">💡 Interactive PDF Preview Tools:</p>
+                    <p>• Use the toolbar controls on the right to <strong className="text-slate-800">zoom</strong>, <strong className="text-slate-800">rotate</strong>, and <strong className="text-slate-800">search</strong> elements inside the preview.</p>
+                    <p>• Toggle <strong className="text-slate-800">Page 1</strong> for the customized study worksheet, and <strong className="text-slate-800">Page 2</strong> for the official Honey Bees completion certificate!</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2 mt-6">
+                  <button
+                    onClick={() => handlePrintWorksheet(activePreviewSheet.id, activePreviewSheet.name)}
+                    className="w-full py-3.5 px-4 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold font-display text-xs transition-transform hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                  >
+                    <Printer size={15} /> Print Complete Pack
+                  </button>
+                  
+                  <button
+                    onClick={() => handleDownloadWorksheet(activePreviewSheet.id, activePreviewSheet.name)}
+                    className="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Download size={15} /> Download PDF Pack
+                  </button>
+                  
+                  <button
+                    onClick={() => setActivePreviewSheet(null)}
+                    className="w-full py-3 px-4 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-600 font-bold text-xs transition-colors text-center cursor-pointer md:hidden"
+                  >
+                    Close Preview
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Side: Visual Live Worksheet PDF Viewer & Interactive Canvas */}
+              <div className="flex-1 bg-slate-800 rounded-3xl border border-slate-700 flex flex-col overflow-hidden max-h-[60vh] md:max-h-full min-h-[450px]">
+                
+                {/* PDF Chrome-style Navigation Header */}
+                <div className="bg-slate-900 text-slate-200 p-2 px-4 flex flex-wrap items-center justify-between gap-3 text-xs border-b border-slate-850 shadow-md">
+                  <div className="flex items-center gap-2">
+                    <span className="bg-red-600 text-white font-extrabold px-1.5 py-0.5 rounded text-[9px] tracking-wider uppercase">PDF</span>
+                    <span className="font-mono text-[10px] truncate max-w-[130px] sm:max-w-[180px]">
+                      {activePreviewSheet.name.toLowerCase().replace(/\s+/g, "_")}.pdf
+                    </span>
+                  </div>
+
+                  {/* Page Toggles */}
+                  <div className="flex items-center gap-1.5 bg-slate-800/80 p-0.5 rounded-lg border border-slate-700">
+                    <button 
+                      onClick={() => setActivePage(1)}
+                      className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all ${activePage === 1 ? 'bg-yellow-400 text-slate-950 shadow-xs' : 'text-slate-400 hover:text-slate-200'}`}
+                    >
+                      Page 1: Work
+                    </button>
+                    <button 
+                      onClick={() => setActivePage(2)}
+                      className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all ${activePage === 2 ? 'bg-yellow-400 text-slate-950 shadow-xs' : 'text-slate-400 hover:text-slate-200'}`}
+                    >
+                      Page 2: Reward
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {/* Zoom State */}
+                    <div className="flex items-center bg-slate-950/40 rounded-lg border border-slate-700 text-[10px]">
+                      <button 
+                        onClick={() => setZoom(prev => Math.max(50, prev - 25))}
+                        className="p-1 px-2 hover:bg-slate-700 rounded-l-lg"
+                        title="Zoom Out"
+                      >
+                        <ZoomOut size={12} />
+                      </button>
+                      <span className="px-2 font-mono text-[10px] min-w-[34px] text-center">{zoom}%</span>
+                      <button 
+                        onClick={() => setZoom(prev => Math.min(150, prev + 25))}
+                        className="p-1 px-2 hover:bg-slate-700 rounded-r-lg"
+                        title="Zoom In"
+                      >
+                        <ZoomIn size={12} />
+                      </button>
+                    </div>
+
+                    {/* Rotate */}
+                    <button 
+                      onClick={() => setRotation(prev => (prev + 90) % 360)}
+                      className="p-1 text-slate-400 hover:text-white rounded hover:bg-slate-750 transition-colors"
+                      title="Rotate Page"
+                    >
+                      <RotateCw size={13} />
+                    </button>
+
+                    {/* Word highlighting search */}
+                    <div className="relative hidden sm:flex items-center">
+                      <Search size={10} className="absolute left-2 text-slate-500" />
+                      <input 
+                        type="text"
+                        placeholder="Search word..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="bg-slate-950 border border-slate-700 rounded-lg pl-6 pr-1.5 py-0.5 text-[9px] w-20 focus:w-28 focus:outline-none focus:border-yellow-500 transition-all text-slate-200 placeholder:text-slate-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* PDF Staging Workspace with Gray Grid Paper backdrop */}
+                <div className="flex-1 overflow-auto p-6 flex justify-center bg-slate-700 min-h-[380px] relative">
+                  
+                  {/* Real-time PDF Highlight Notification */}
+                  {searchQuery && (
+                    <div className="absolute top-2 left-2 z-10 bg-yellow-400/90 text-slate-900 text-[9px] font-bold px-2 py-0.5 rounded-full shadow-xs flex items-center gap-1">
+                      <span>🔍</span> Highlighted matches for "{searchQuery}"
+                    </div>
+                  )}
+
+                  <div 
+                    style={{ 
+                      transform: `scale(${zoom / 100}) rotate(${rotation}deg)`, 
+                      transformOrigin: 'top center',
+                      transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                      width: '100%',
+                      maxWidth: '460px'
+                    }}
+                    className="origin-top"
+                  >
+                    {activePage === 2 ? (
+                      /* PAGE 2: PREMIUM REWARD CERTIFICATE BOARD */
+                      <div className="bg-amber-50 rounded-2xl border-[8px] border-double border-yellow-500 p-6 shadow-xl relative text-slate-800 min-h-[460px] flex flex-col justify-between text-center overflow-hidden">
+                        
+                        {/* Decorative Star graphics */}
+                        <div className="absolute top-3 left-3 text-lg opacity-25">⭐</div>
+                        <div className="absolute top-10 right-4 text-xl opacity-25">🐝</div>
+                        <div className="absolute bottom-12 left-6 text-xl opacity-25">🌟</div>
+                        <div className="absolute bottom-3 right-3 text-lg opacity-25">🏅</div>
+
+                        <div className="space-y-4">
+                          <div className="flex justify-center mt-2">
+                            <span className="bg-yellow-400 text-slate-900 text-[9px] font-black tracking-widest uppercase px-3 py-1 rounded-full border border-yellow-500 shadow-3xs">
+                              Honey Bees Honor Certificate
+                            </span>
+                          </div>
+
+                          <h4 className="font-display font-black text-amber-900 text-lg leading-tight tracking-tight mt-1 uppercase">
+                            Certificate of Mastery
+                          </h4>
+                          
+                          <p className="text-[8px] font-mono uppercase text-slate-500 tracking-wider">
+                            Officially Awarded To
+                          </p>
+
+                          <div className="py-2">
+                            <span className="text-base font-bold font-display text-yellow-600 border-b-2 border-dashed border-yellow-400 px-6 pb-0.5 inline-block">
+                              {childName.trim() || "Little Bee"}
+                            </span>
+                          </div>
+
+                          <p className="text-[10px] text-slate-600 leading-relaxed max-w-xs mx-auto">
+                            For demonstrating excellent precision, motor skills, and tracing masterfulness in completing the custom <strong className="text-slate-800 font-bold">"{activePreviewSheet.name}"</strong> curriculum pack.
+                          </p>
+                        </div>
+
+                        {/* Signatures */}
+                        <div className="border-t border-yellow-200/80 pt-4 mt-6 flex justify-between items-end text-left text-[8px] text-slate-500">
+                          <div>
+                            <div className="font-bold text-slate-700 underline decoration-dashed decoration-yellow-400">Beatrice AI</div>
+                            <span>Preschool Director Guide</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xl">🌟</span>
+                            <div className="font-extrabold text-yellow-600 tracking-wider text-[7px] uppercase font-mono">Verified Star Student</div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      /* PAGE 1: DYNAMIC PERSONALIZED PREVIEW WORK SHEET WITH LIVE SEARCH FILTERS */
+                      <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-5 font-sans min-h-[460px] relative text-slate-800 flex flex-col justify-between">
+                        
+                        {/* Interactive Header */}
+                        <div>
+                          <div className="flex justify-between items-start border-b-2 border-yellow-300 pb-2 mb-3.5">
+                            <div className="flex items-center gap-1">
+                              <span className="text-lg">🐝</span>
+                              <div className="text-left">
+                                <h5 className="text-[10px] font-black font-display tracking-tight text-slate-900 leading-none">Honey Bees</h5>
+                                <span className="text-[7px] text-slate-400 font-extrabold uppercase tracking-widest font-mono">Preschool</span>
+                              </div>
+                            </div>
+                            <div className="text-[8px] bg-slate-50 border border-slate-150 p-1 rounded-lg text-right space-y-0.5 leading-none">
+                              <div><strong className="text-slate-400">Child:</strong> <span className="underline font-bold text-slate-800">{childName.trim() || "Little Bee"}</span></div>
+                              <div><strong className="text-slate-400">Date:</strong> <span className="text-slate-500">{new Date().toLocaleDateString()}</span></div>
+                            </div>
+                          </div>
+
+                          {/* Title inside mock preview */}
+                          <h4 className="text-[11px] font-black text-slate-900 tracking-tight mb-0.5 text-center">
+                            {activePreviewSheet.name}
+                          </h4>
+                          <p className="text-[8px] text-slate-400 mb-3 text-center leading-relaxed">
+                            {activePreviewSheet.id === "pdf-az" && "Instruction: Carefully trace each letter with a pencil inside the dashed guides."}
+                            {activePreviewSheet.id === "pdf-num" && "Instruction: Trace the numbers and count the balloons next to them!"}
+                            {activePreviewSheet.id === "pdf-vocab" && "Instruction: Ask a parent to cut along lines and trace words!"}
+                            {activePreviewSheet.id === "pdf-telugu" && "Instruction: Trace the Telugu vowel characters and say sounds aloud!"}
+                          </p>
+
+                          {/* Grid content mock representation */}
+                          {activePreviewSheet.id === "pdf-az" && (
+                            <div className="grid grid-cols-4 gap-1.5 text-center">
+                              {["A", "B", "C", "D", "E", "F", "G", "H"].map((letter) => {
+                                const isMatched = searchQuery && letter.toLowerCase().includes(searchQuery.toLowerCase());
+                                return (
+                                  <div 
+                                    key={letter} 
+                                    className={`border border-dashed rounded-lg p-1.5 transition-all ${isMatched ? 'bg-yellow-100 border-yellow-500 scale-105 shadow-md border-2' : 'bg-slate-50/50 border-slate-300'}`}
+                                  >
+                                    <div className="relative h-8 flex items-center justify-center font-bold">
+                                      <span className="text-xl text-slate-200/60 absolute">{letter}</span>
+                                      <span className="text-xl text-transparent absolute" style={{ WebkitTextStroke: "1px #94a3b8" }}>{letter}</span>
+                                    </div>
+                                    <span className="text-[7px] text-slate-400 block uppercase font-mono tracking-widest">trace {letter}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {activePreviewSheet.id === "pdf-num" && (
+                            <div className="space-y-1">
+                              {[1, 2, 3, 4, 5].map((num) => {
+                                const isMatched = searchQuery && (num.toString().includes(searchQuery) || "balloon".includes(searchQuery.toLowerCase()));
+                                return (
+                                  <div 
+                                    key={num} 
+                                    className={`border border-dashed rounded-lg p-1.5 flex items-center gap-3 transition-all ${isMatched ? 'bg-yellow-100 border-yellow-500 scale-[1.02] shadow-xs border-2' : 'bg-slate-50/50 border-slate-200'}`}
+                                  >
+                                    <div className="relative w-7 h-7 flex items-center justify-center font-bold bg-white rounded border border-slate-100">
+                                      <span className="text-md text-slate-200/60 absolute">{num}</span>
+                                      <span className="text-md text-transparent absolute" style={{ WebkitTextStroke: "1px #94a3b8" }}>{num}</span>
+                                    </div>
+                                    <div className="flex gap-0.5 text-xs">
+                                      {Array.from({ length: num }).map((_, i) => (
+                                        <span key={i}>🎈</span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {activePreviewSheet.id === "pdf-vocab" && (
+                            <div className="grid grid-cols-2 gap-2">
+                              {[
+                                { name: "APPLE", emoji: "🍎", phonics: "Ah-pul" },
+                                { name: "LION", emoji: "🦁", phonics: "Lye-on" },
+                                { name: "ELEPHANT", emoji: "🐘", phonics: "Eh-lee-fant" },
+                                { name: "HONEYBEE", emoji: "🐝", phonics: "Hah-nee-bee" }
+                              ].map((animal) => {
+                                const isMatched = searchQuery && (animal.name.toLowerCase().includes(searchQuery.toLowerCase()) || animal.phonics.toLowerCase().includes(searchQuery.toLowerCase()));
+                                return (
+                                  <div 
+                                    key={animal.name} 
+                                    className={`border-2 border-dashed rounded-xl p-2.5 text-center relative transition-all ${isMatched ? 'bg-yellow-100 border-yellow-500 scale-105 shadow-md' : 'bg-slate-50/50 border-slate-300'}`}
+                                  >
+                                    <span className="text-xl block mb-0.5">{animal.emoji}</span>
+                                    <strong className="text-[10px] text-slate-800 font-display block leading-none">{animal.name}</strong>
+                                    <span className="text-[7.5px] text-yellow-600 block mb-1.5">"{animal.phonics}"</span>
+                                    <div className="border border-dashed border-slate-200 bg-white rounded-md py-0.5 text-[10px] font-bold text-transparent" style={{ WebkitTextStroke: "0.8px #64748b", letterSpacing: "1.2px" }}>
+                                      {animal.name}
+                                    </div>
+                                    <span className="text-[6.5px] text-slate-300 block mt-1.5">✂--- Cut Line ---</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {activePreviewSheet.id === "pdf-telugu" && (
+                            <div className="grid grid-cols-3 gap-1.5">
+                              {[
+                                { char: "అ", sound: "a" },
+                                { char: "ఆ", sound: "aa" },
+                                { char: "ఇ", sound: "i" },
+                                { char: "ఈ", sound: "ii" },
+                                { char: "ఉ", sound: "u" },
+                                { char: "ఊ", sound: "uu" }
+                              ].map((v) => {
+                                const isMatched = searchQuery && (v.char.includes(searchQuery) || v.sound.toLowerCase().includes(searchQuery.toLowerCase()));
+                                return (
+                                  <div 
+                                    key={v.char} 
+                                    className={`border border-dashed rounded-lg p-1.5 bg-slate-50/50 text-center transition-all ${isMatched ? 'bg-yellow-100 border-yellow-500 scale-105 shadow-md border-2' : 'border-slate-300'}`}
+                                  >
+                                    <span className="text-md font-bold text-slate-700 block leading-tight">{v.char}</span>
+                                    <span className="text-[7.5px] text-emerald-600 font-mono font-bold block mb-1">"{v.sound}"</span>
+                                    <div className="border border-dashed border-slate-200 bg-white rounded-md py-0.5 text-sm font-bold text-transparent" style={{ WebkitTextStroke: "0.8px #94a3b8" }}>
+                                      {v.char}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Mock Footer */}
+                        <div className="text-[7px] text-slate-400 text-center mt-4 border-t border-slate-100 pt-1.5 flex items-center justify-between">
+                          <span>🐝 Honey Bees Academy Printable</span>
+                          <span>Parents PDF Tracing Sheet v1.2</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

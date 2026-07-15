@@ -36,38 +36,72 @@ export default function About() {
     }
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.05,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 80,
+        damping: 15,
+      },
+    },
+  };
+
   return (
-    <section id="about-us" className="py-16 md:py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="about-us" className="py-16 md:py-24 bg-white dark:bg-slate-900 transition-colors duration-350">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-80px" }}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+      >
         
         {/* Top Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-3 mb-16">
-          <span className="text-xs font-bold text-orange-500 uppercase tracking-widest bg-orange-50 px-3 py-1 rounded-full">
+        <motion.div
+          variants={itemVariants}
+          className="text-center max-w-3xl mx-auto space-y-3 mb-16"
+        >
+          <span className="text-xs font-bold text-orange-500 dark:text-orange-300 uppercase tracking-widest bg-orange-50 dark:bg-orange-950/40 px-3 py-1 rounded-full">
             Our Foundation
           </span>
-          <h2 className="font-display font-black text-3xl sm:text-4xl text-slate-900 tracking-tight">
-            Why Sweetwater Parents Trust Our Hive
+          <h2 className="font-display font-black text-3xl sm:text-4xl text-slate-900 dark:text-white tracking-tight">
+            Why Lawsons Bay Parents Trust Our Hive
           </h2>
-          <p className="text-slate-500 font-sans text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-500 dark:text-slate-350 font-sans text-sm sm:text-base leading-relaxed">
             Honey Bees isn't just a daycare. We are a premier developmental springboard designed to wire early cognitive logic, inspire motor creativity, and foster warm peer interactions.
           </p>
-        </div>
+        </motion.div>
 
         {/* Feature Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {coreValues.map((val, idx) => (
             <motion.div
               key={idx}
-              whileHover={{ y: -5 }}
-              className="bg-slate-50 border border-slate-100 p-6 rounded-3xl transition-all shadow-xs hover:shadow-md hover:bg-white"
+              variants={itemVariants}
+              whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              className="bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 p-6 rounded-3xl transition-all shadow-xs hover:shadow-md hover:bg-white dark:hover:bg-slate-800"
             >
-              <div className="bg-white border border-slate-100 p-3.5 rounded-2xl w-fit shadow-xs mb-5">
+              <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-3.5 rounded-2xl w-fit shadow-xs mb-5">
                 {val.icon}
               </div>
-              <h3 className="font-display font-bold text-base text-slate-900 mb-2">
+              <h3 className="font-display font-bold text-base text-slate-900 dark:text-white mb-2">
                 {val.title}
               </h3>
-              <p className="text-xs text-slate-500 leading-relaxed font-sans">
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
                 {val.desc}
               </p>
             </motion.div>
@@ -75,7 +109,10 @@ export default function About() {
         </div>
 
         {/* Learning Methodology block */}
-        <div className="mt-20 bg-gradient-to-br from-yellow-500 to-orange-400 rounded-[36px] p-8 md:p-12 text-white relative overflow-hidden shadow-xl">
+        <motion.div
+          variants={itemVariants}
+          className="mt-20 bg-gradient-to-br from-yellow-500 to-orange-400 rounded-[36px] p-8 md:p-12 text-white relative overflow-hidden shadow-xl"
+        >
           <div className="absolute top-0 right-0 text-[180px] opacity-10 leading-none select-none font-display pointer-events-none">
             🐝
           </div>
@@ -130,9 +167,9 @@ export default function About() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-      </div>
+      </motion.div>
     </section>
   );
 }

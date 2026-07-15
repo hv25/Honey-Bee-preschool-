@@ -43,18 +43,18 @@ export default function FacilitiesSection() {
   ];
 
   return (
-    <section id="facilities" className="py-16 md:py-24 bg-white">
+    <section id="facilities" className="py-16 md:py-24 bg-white dark:bg-slate-950 transition-colors duration-350">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Section */}
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-          <span className="text-xs font-bold text-orange-500 uppercase tracking-widest bg-orange-50 px-3 py-1 rounded-full">
+          <span className="text-xs font-bold text-orange-500 dark:text-orange-300 uppercase tracking-widest bg-orange-50 dark:bg-orange-950/40 px-3 py-1 rounded-full">
             Our Sweet Hive Tour
           </span>
-          <h2 className="font-display font-black text-3xl sm:text-4xl text-slate-900 tracking-tight">
+          <h2 className="font-display font-black text-3xl sm:text-4xl text-slate-900 dark:text-white tracking-tight">
             Premium Child-Safe Facilities
           </h2>
-          <p className="text-slate-500 text-xs sm:text-sm leading-relaxed">
+          <p className="text-slate-500 dark:text-slate-350 text-xs sm:text-sm leading-relaxed">
             Every square inch of Honey Bees is customized with soft rounded corners, anti-slip carpets, and strict pediatric hygiene grids. We design environments that promote worry-free explore play.
           </p>
         </div>
@@ -65,27 +65,27 @@ export default function FacilitiesSection() {
             <motion.div
               whileHover={{ y: -5 }}
               key={idx}
-              className="bg-slate-50 border border-slate-150 p-6 rounded-3xl flex flex-col justify-between shadow-xs hover:shadow-md transition-all group hover:bg-white hover:border-yellow-250"
+              className="bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 p-6 rounded-3xl flex flex-col justify-between shadow-xs hover:shadow-md transition-all group hover:bg-white dark:hover:bg-slate-850 hover:border-yellow-250 dark:hover:border-yellow-400/40"
             >
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-4xl leading-none">{fac.icon}</span>
-                  <span className="bg-orange-50 border border-orange-100 text-orange-700 text-[9px] font-bold font-mono px-2.5 py-1 rounded-full uppercase">
+                  <span className="bg-orange-50 dark:bg-orange-950/40 border border-orange-100 dark:border-orange-900/30 text-orange-700 dark:text-orange-300 text-[9px] font-bold font-mono px-2.5 py-1 rounded-full uppercase">
                     {fac.tag}
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="font-display font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors">
+                  <h3 className="font-display font-extrabold text-base text-slate-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                     {fac.title}
                   </h3>
-                  <p className="text-xs text-slate-500 mt-2 leading-relaxed font-sans font-normal">
+                  <p className="text-xs text-slate-500 dark:text-slate-450 mt-2 leading-relaxed font-sans font-normal">
                     {fac.desc}
                   </p>
                 </div>
               </div>
 
-              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center gap-1.5 text-[11px] text-slate-400 font-sans font-bold">
+              <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-1.5 text-[11px] text-slate-400 dark:text-slate-500 font-sans font-bold">
                 <Check size={12} className="text-emerald-500 shrink-0" />
                 <span>Standard compliance check passed</span>
               </div>

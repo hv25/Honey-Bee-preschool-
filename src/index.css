@@ -4,6 +4,10 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Quicksand", sans-serif;
+  --color-slate-150: #ebf0f5;
+  --color-slate-550: #55657c;
+  --color-slate-750: #283548;
+  --color-slate-850: #162031;
 }
 
 /* Custom bounce delay animation for chatbot typing bubbles or active blobs */
