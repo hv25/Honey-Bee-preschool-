@@ -152,6 +152,11 @@ export default function Footer({ setActiveTab }: FooterProps) {
                 </button>
               </li>
               <li>
+                <button onClick={() => setActiveTab("faq")} className="hover:text-yellow-400 transition-colors text-left block w-full cursor-pointer">
+                  Frequently Asked Questions (FAQ)
+                </button>
+              </li>
+              <li>
                 <button onClick={() => setActiveTab("dashboards")} className="hover:text-yellow-400 transition-colors text-left block w-full cursor-pointer text-yellow-500 font-bold">
                   Parent / Teacher Portal Dashboard 🔒
                 </button>
@@ -239,7 +244,12 @@ export default function Footer({ setActiveTab }: FooterProps) {
 
         {/* Lower footer copyright */}
         <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500 font-medium">
-          <p>© 2026 Honey Bees Pre-School, Daycare and Tuition centre. All rights reserved.</p>
+          <div className="space-y-1 text-center md:text-left">
+            <p>© 2026 Honey Bees Pre-School, Daycare and Tuition centre. All rights reserved.</p>
+            <p className="text-[11px] text-slate-600 dark:text-slate-500 font-sans tracking-wide">
+              Designed by <span className="font-bold text-slate-400 dark:text-slate-300">Harsha Vardhan Korukonda</span>
+            </p>
+          </div>
           <div className="flex gap-6">
             <span className="hover:text-yellow-400 cursor-pointer">Terms of Service</span>
             <span className="hover:text-yellow-400 cursor-pointer">Privacy Policy</span>

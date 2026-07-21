@@ -69,7 +69,7 @@ export default function ProgramsSection({ onEnquireClick, onBrochureClick }: Pro
       desc: "A warm, sanitized secondary home. Offers organic pediatric meals, soft sleep bays, homework assistance, and safe play.",
       color: "border-rose-250 bg-rose-50/30 text-rose-700",
       icon: "🏡",
-      points: ["Nutritious warm meals", "Live CCTV camera links", "CPR trained dedicated care"],
+      points: ["Nutritious warm meals", "Admin CCTV monitoring", "CPR trained dedicated care"],
     },
     {
       id: "tc",
@@ -100,7 +100,7 @@ export default function ProgramsSection({ onEnquireClick, onBrochureClick }: Pro
             Nurturing Programs Structured for Growth
           </h2>
           <p className="text-slate-500 dark:text-slate-350 text-xs sm:text-sm leading-relaxed">
-            From toddlers making their first friends to secondary school scholars mastering physics, we have customized environments optimized to build deep trust and confidence.
+            From toddlers making their first friends to pre-school scholars preparing for primary school, we have customized environments optimized to build deep trust and confidence.
           </p>
 
           {/* Tab Filter Button Switch */}
@@ -169,13 +169,7 @@ export default function ProgramsSection({ onEnquireClick, onBrochureClick }: Pro
                 {/* Pricing Schedule block and trigger */}
                 <div className="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
                   <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-850 p-3 rounded-xl">
-                    {prog.category !== "preschool" ? (
-                      <div>
-                        <span className="text-[9px] uppercase tracking-wider text-slate-400 dark:text-slate-500 block font-bold">Monthly Tuition</span>
-                        <span className="text-xl font-display font-black text-slate-900 dark:text-white">${prog.fee} <span className="text-xs font-medium text-slate-400">/ mo</span></span>
-                      </div>
-                    ) : null}
-                    <div className={prog.category === "preschool" ? "text-center w-full" : "text-right"}>
+                    <div className="text-center w-full">
                       <span className="text-[9px] uppercase tracking-wider text-slate-400 dark:text-slate-500 block font-bold">Daily Timing</span>
                       <span className="text-xs font-mono font-bold text-slate-700 dark:text-slate-300 block mt-0.5">{prog.time}</span>
                     </div>

@@ -32,6 +32,7 @@ import {
   CheckCircle as FileCheck
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import KidsZoneBubbles from "./effects/KidsZoneBubbles";
 
 // --- Types & Constants ---
 interface AlphabetLetter {
@@ -910,6 +911,9 @@ export default function Playroom() {
 
   return (
     <div className="bg-yellow-50/20 dark:bg-slate-950 min-h-screen py-8 sm:py-12 relative overflow-hidden font-sans transition-colors duration-350">
+      
+      {/* Floating Interactive Bubbles in Kids Zone */}
+      <KidsZoneBubbles />
       
       {/* Cartoon clouds and sunshine backdrop decorators */}
       <div className="absolute top-10 left-10 w-32 h-16 bg-white/70 dark:bg-slate-900/30 rounded-full blur-md animate-pulse pointer-events-none" />

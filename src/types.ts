@@ -132,6 +132,11 @@ export interface DatabaseState {
   testimonials: Testimonial[];
   events?: UpcomingEvent[];
   emails?: EmailLog[];
+  worksheets?: any[];
+  ptmBookings?: any[];
+  leaveRequests?: any[];
+  homeworkSubmissions?: any[];
+  pushSettings?: any;
 }
 
 export interface EmailLog {

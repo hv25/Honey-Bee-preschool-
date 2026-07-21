@@ -733,7 +733,7 @@ const BROCHURE_PAGES = [
             🚨 Triple-locked childproof electromagnetic escape exits.
           </div>
           <div className="bg-slate-800/30 p-2.5 border border-slate-700/30 rounded-lg">
-            📹 HD CCTV 1080p feeds linked securely to parents.
+            📹 HD CCTV 1080p feeds monitored strictly by admins.
           </div>
           <div className="bg-slate-800/30 p-2.5 border border-slate-700/30 rounded-lg">
             🌱 Air Purifiers active throughout the facility.
@@ -834,7 +834,7 @@ WHAT'S INSIDE OUR PROSPECTUS:
 2. Extended timings for modern working parents: 8:30 AM to 7:30 PM
 3. Dual-philosophy Montessori curriculum
 4. Interactive Beatrice AI Tracing Slate pipeline
-5. Full HD CCTV 1080p security access
+5. Full HD CCTV 1080p security monitored by admin
 6. Organic pediatric nutrition plan
 7. Step-by-step admissions enrollment process
 

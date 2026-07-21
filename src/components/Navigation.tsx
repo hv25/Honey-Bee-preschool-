@@ -24,6 +24,7 @@ export default function Navigation({ activeTab, setActiveTab, onBookTourClick, o
     { id: "events", label: "Events" },
     { id: "blog", label: "Blog" },
     { id: "admissions", label: "Admissions" },
+    { id: "faq", label: "FAQs" },
     { id: "contact", label: "Contact Us" },
     { id: "dashboards", label: "Portals Dashboard", highlight: true }
   ];

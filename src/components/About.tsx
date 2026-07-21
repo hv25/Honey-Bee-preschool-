@@ -1,13 +1,14 @@
 import React from "react";
-import { ShieldCheck, Sparkles, BookOpen, Clock, Heart, Award } from "lucide-react";
+import { ShieldCheck, BookOpen, Award } from "lucide-react";
 import { motion } from "motion/react";
+import AnimatedCounter from "./effects/AnimatedCounter";
 
 export default function About() {
   const coreValues = [
     {
       icon: <ShieldCheck className="text-emerald-500" size={24} />,
       title: "100% Secure & CCTV Monitored",
-      desc: "Every room is equipped with secure live CCTV stream feeds so parents can check in on their kids anytime during work hours.",
+      desc: "Every room is equipped with secure live CCTV stream monitoring.",
     },
     {
       icon: <Award className="text-yellow-600" size={24} />,
@@ -18,21 +19,6 @@ export default function About() {
       icon: <BookOpen className="text-sky-500" size={24} />,
       title: "Play-Based Curriculum",
       desc: "We follow a progressive, activity-based methodology that shapes logic, spatial coordinates, fine motor dexterity, and cooperative speech.",
-    },
-    {
-      icon: <Heart className="text-rose-500" size={24} />,
-      title: "Holistic Social Care",
-      desc: "Our core curriculum places immense emphasis on emotion-regulation, sharing, positive reinforcement, and high-trust peer bonding.",
-    },
-    {
-      icon: <Sparkles className="text-purple-500" size={24} />,
-      title: "Premium Indoor Arenas",
-      desc: "Anti-shock foam flooring, sensory sandpits, fully cushioned soft-corners, and pediatric-approved toys for safe play.",
-    },
-    {
-      icon: <Clock className="text-orange-500" size={24} />,
-      title: "Extended Hours & Meals",
-      desc: "Our daycare runs till 6:30 PM with nutritious pediatric dietician-approved organic meals served warm daily.",
     }
   ];
 
@@ -154,11 +140,15 @@ export default function About() {
             {/* Simulated interactive stat counter */}
             <div className="lg:col-span-5 bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 grid grid-cols-2 gap-4 text-center">
               <div>
-                <span className="text-3xl font-display font-black block">1:8</span>
+                <div className="text-3xl font-display font-black block">
+                  <AnimatedCounter value={1} />:<AnimatedCounter value={8} />
+                </div>
                 <span className="text-[10px] uppercase text-yellow-100 block tracking-wide mt-1">Nurture Ratio</span>
               </div>
               <div>
-                <span className="text-3xl font-display font-black block">100%</span>
+                <div className="text-3xl font-display font-black block">
+                  <AnimatedCounter value={100} suffix="%" />
+                </div>
                 <span className="text-[10px] uppercase text-yellow-100 block tracking-wide mt-1">CPR Certified</span>
               </div>
               <div className="border-t border-white/10 pt-4 col-span-2">

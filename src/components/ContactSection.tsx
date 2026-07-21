@@ -53,7 +53,7 @@ export default function ContactSection() {
                   Get In Touch
                 </span>
                 <h2 className="font-display font-black text-3xl text-slate-900 dark:text-white tracking-tight mt-3">
-                  Visit Our Honey Hive
+                  Visit Our Honey Bees
                 </h2>
                 <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-2 leading-relaxed">
                   Have a question about fees, school bus routes, child meals, or enrollment limits? Drop by or leave a prompt message below.

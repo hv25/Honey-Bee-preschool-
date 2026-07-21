@@ -623,6 +623,45 @@ if (!db.playroomVideos || Object.keys(db.playroomVideos).length === 0) {
   saveDb();
 }
 
+// Initialize default voiceSettings if missing
+if (!db.voiceSettings) {
+  db.voiceSettings = {
+    greetingEn: "Buzz Buzz! 🐝 Thank you for calling Honey Bees Pre-School. I'm Beatrice, your virtual AI Receptionist! I can instantly book a school tour or answer questions about our classes. Am I speaking with {callerName}?",
+    greetingTe: "బజ్ బజ్! 🐝 హనీ బీస్ ప్రీ-స్కూల్‌కు కాల్ చేసినందుకు ధన్యవాదాలు. నేను బీట్రైస్, మీ వర్చువల్ AI రిసెప్షనిస్ట్! నేను తక్షణమే పాఠశాల పర్యటనను బుక్ చేయగలను లేదా మా తరగతుల గురించి ప్రశ్నలకు సమాధానం ఇవ్వగలను. నేను {callerName} గారితో మాట్లాడుతున్నానా?",
+  };
+  saveDb();
+}
+
+// Initialize default worksheets if missing
+if (!db.worksheets) {
+  db.worksheets = [
+    { id: "ws-1", title: "Alphabet Tracing A-Z Activity Sheet", subject: "Phonics & Writing", fileUrl: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80", ageGroup: "Nursery / Play Group", downloadCount: 42 },
+    { id: "ws-2", title: "Numbers & Counting Honeybees (1-10)", subject: "Mathematics", fileUrl: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80", ageGroup: "Nursery / LKG", downloadCount: 56 },
+    { id: "ws-3", title: "Monsoon Rainbow Coloring Template", subject: "Arts & Crafts", fileUrl: "https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&w=800&q=80", ageGroup: "All Classes", downloadCount: 78 }
+  ];
+  saveDb();
+}
+
+// Initialize default ptm bookings if missing
+if (!db.ptmBookings) {
+  db.ptmBookings = [
+    { id: "ptm-1", studentId: "stud-1", parentName: "Mary Carter", teacherName: "Mrs. Evelyn Green", date: "2026-07-24", time: "10:15 AM", status: "Confirmed" }
+  ];
+  saveDb();
+}
+
+// Initialize default leave requests if missing
+if (!db.leaveRequests) {
+  db.leaveRequests = [];
+  saveDb();
+}
+
+// Initialize default homework submissions if missing
+if (!db.homeworkSubmissions) {
+  db.homeworkSubmissions = [];
+  saveDb();
+}
+
 // --- CHATBOT SYSTEM INSTRUCTIONS ---
 const SYSTEM_INSTRUCTION = `
 You are the Honey Bees Preschool AI Assistant, an ultra-polite, warm, and highly professional child-care advisor and brand ambassador for "Honey Bees Pre-School, Daycare and Tuition centre".
@@ -640,7 +679,7 @@ Here are key facts about Honey Bees:
   6. Tuition Centre (Grades 1-10): Math, Science, English, test prep, homework support. Monthly fee: $100 per subject. Timings: 4:00 PM - 7:30 PM.
 - Brand features/USPs: 
   * Premium, clean, fully sanitized child-friendly indoor foam play arena.
-  * Live CCTV access granted to enrolled parent accounts (high transparency!).
+  * Full live CCTV coverage monitored strictly by admins and security directors to maintain student privacy.
   * Nurturing teachers (all certified in Early Childhood Education and Pediatric CPR).
   * Safe transportation with real-time GPS tracking.
   * Interactive digital parent app to track daily activities, health, meals, and attendance.
@@ -665,13 +704,13 @@ function getBackupReply(message: string): string {
   } else if (msg.includes("admission") || msg.includes("enroll") || msg.includes("join") || msg.includes("register")) {
     reply = "Admissions for the 2026-27 session are actively open! 🎉 You can submit an **Online Admission Form** in just 2 minutes via our admissions tab, or request our prospectus. Let me know if you would like me to explain the simple 3-step enrollment process!";
   } else if (msg.includes("daycare") || msg.includes("baby") || msg.includes("infant") || msg.includes("after school")) {
-    reply = "Our Daycare is a second home for kids! 🧸 We accept ages 6 months to 10 years, open from 8:00 AM to 6:30 PM. We offer customized nap zones, fresh pediatric-approved organic meals, and secure CCTV streams for parents. It's fully staffed with CPR-trained caregivers.";
+    reply = "Our Daycare is a second home for kids! 🧸 We accept ages 6 months to 10 years, open from 8:00 AM to 6:30 PM. We offer customized nap zones, fresh pediatric-approved organic meals, and secure CCTV streams monitored by admins. It's fully staffed with CPR-trained caregivers.";
   } else if (msg.includes("tuition") || msg.includes("class") || msg.includes("grade")) {
     reply = "Our Tuition Centre (Grades 1-10) covers Mathematics, Science, and English. 📚 Timings are 4:00 PM to 7:30 PM, led by expert coaches who help with school homework and test-prep. Monthly fee is $100 per subject.";
   } else if (msg.includes("contact") || msg.includes("phone") || msg.includes("address") || msg.includes("location") || msg.includes("email")) {
     reply = "You can reach our administrative desk at **086883 30502** or email **hello@honeybeespreschool.com**. 🐝 We are located at **LAWSON'S BAY COLONY, 4-43-16/1, Lawsons Bay Colony, Pedda Waltair, Visakhapatnam, Andhra Pradesh 530017**. You can find us on Google Maps here: [Google Maps](https://www.google.com/maps/search/?api=1&query=LAWSON%27S+BAY+COLONY%2C+4-43-16%2F1%2C+Lawsons+Bay+Colony%2C+Pedda+Waltair%2C+Visakhapatnam%2C+Andhra+Pradesh+530017) !";
   } else if (msg.includes("cctv") || msg.includes("safe") || msg.includes("secure") || msg.includes("camera")) {
-    reply = "Safety is our absolute #1 priority! 🛡️ Honey Bees is equipped with secure, app-linked CCTV cameras. Enrolled parents are given credentials to log into their dashboard and view live feeds during play & nap times. We also have high-foam shockproof flooring and child-locked exit gates.";
+    reply = "Safety is our absolute #1 priority! 🛡️ Honey Bees is equipped with secure 1080p CCTV cameras. To ensure ultimate student privacy, safety compliance, and secure local data, live CCTV feeds are restricted and monitored strictly by administrators and certified staff members only. Direct login credentials are not given to parents to prevent external digital access. We also have high-foam shockproof flooring and child-locked exit gates.";
   }
   return reply;
 }
@@ -1098,6 +1137,29 @@ app.delete("/api/admin/playroom/videos/:letter/:id", (req, res) => {
 
   db.playroomVideos[cleanLetter].splice(index, 1);
   return res.json({ success: true, message: "Video lesson deleted successfully!" });
+});
+
+// GET Voice Settings
+app.get("/api/voice-settings", (req, res) => {
+  if (!db.voiceSettings) {
+    db.voiceSettings = {
+      greetingEn: "Buzz Buzz! 🐝 Thank you for calling Honey Bees Pre-School. I'm Beatrice, your virtual AI Receptionist! I can instantly book a school tour or answer questions about our classes. Am I speaking with {callerName}?",
+      greetingTe: "బజ్ బజ్! 🐝 హనీ బీస్ ప్రీ-స్కూల్‌కు కాల్ చేసినందుకు ధన్యవాదాలు. నేను బీట్రైస్, మీ వర్చువల్ AI రిసెప్షనిస్ట్! నేను తక్షణమే పాఠశాల పర్యటనను బుక్ చేయగలను లేదా మా తరగతుల గురించి ప్రశ్నలకు సమాధానం ఇవ్వగలను. నేను {callerName} గారితో మాట్లాడుతున్నానా?",
+    };
+  }
+  return res.json(db.voiceSettings);
+});
+
+// PUT Admin Update Voice Settings
+app.put("/api/admin/voice-settings", (req, res) => {
+  const { greetingEn, greetingTe } = req.body;
+  if (!db.voiceSettings) {
+    db.voiceSettings = {};
+  }
+  if (greetingEn !== undefined) db.voiceSettings.greetingEn = greetingEn;
+  if (greetingTe !== undefined) db.voiceSettings.greetingTe = greetingTe;
+  saveDb();
+  return res.json({ success: true, message: "Voice assistant greeting updated successfully!", data: db.voiceSettings });
 });
 
 // POST Admin Upload Image to Cloudinary (or Local Memory Fallback)
@@ -1662,6 +1724,161 @@ app.post("/api/parent/pay-fee", (req, res) => {
     success: true,
     message: `Payment of $${feeRecord.amount} processed securely via Razorpay pipeline simulation! Thank you.`,
     data: feeRecord,
+  });
+});
+
+// Submit Leave/Absence Request
+app.post("/api/parent/request-leave", (req, res) => {
+  const { studentId, date, status, reason } = req.body;
+  if (!studentId || !date || !status || !reason) {
+    return res.status(400).json({ error: "Student ID, Date, status and reason are required" });
+  }
+
+  const student = db.students.find((s: any) => s.id === studentId);
+  if (!student) {
+    return res.status(404).json({ error: "Student record not found" });
+  }
+
+  const leaveId = `leave-${Date.now()}`;
+  const newLeave = {
+    id: leaveId,
+    studentId,
+    studentName: student.name,
+    date,
+    status, // "Absent" or "Late"
+    reason,
+    submittedAt: new Date().toISOString()
+  };
+
+  if (!db.leaveRequests) db.leaveRequests = [];
+  db.leaveRequests.unshift(newLeave);
+
+  // Update student attendance logs with this date
+  const existingIdx = student.attendance.findIndex((a: any) => a.date === date);
+  if (existingIdx > -1) {
+    student.attendance[existingIdx].status = status;
+  } else {
+    student.attendance.push({ date, status });
+  }
+
+  // Trim to avoid infinite sizing
+  if (db.leaveRequests.length > 200) db.leaveRequests.pop();
+
+  return res.json({
+    success: true,
+    message: `Leave request submitted! Attendance updated to '${status}' for ${date}.`,
+    data: newLeave
+  });
+});
+
+// Book Parent-Teacher Meeting (PTM)
+app.post("/api/parent/book-ptm", (req, res) => {
+  const { studentId, parentName, teacherName, date, time } = req.body;
+  if (!studentId || !parentName || !teacherName || !date || !time) {
+    return res.status(400).json({ error: "Missing required booking details" });
+  }
+
+  const student = db.students.find((s: any) => s.id === studentId);
+  if (!student) {
+    return res.status(404).json({ error: "Student record not found" });
+  }
+
+  // Check if slot already taken
+  if (!db.ptmBookings) db.ptmBookings = [];
+  const slotTaken = db.ptmBookings.some((b: any) => b.date === date && b.time === time && b.teacherName === teacherName);
+  if (slotTaken) {
+    return res.status(400).json({ error: "This time slot is already booked. Please choose another time." });
+  }
+
+  const bookingId = `ptm-${Date.now()}`;
+  const newBooking = {
+    id: bookingId,
+    studentId,
+    studentName: student.name,
+    parentName,
+    teacherName,
+    date,
+    time,
+    status: "Confirmed",
+    createdAt: new Date().toISOString()
+  };
+
+  db.ptmBookings.unshift(newBooking);
+
+  // Trigger simulated confirmation email to parent
+  triggerEmailDispatch({
+    formType: "PTM Slot Confirmation",
+    parentName,
+    email: student.parentEmail || "parent@honeybees.com",
+    phone: "+1 (555) 987-6543",
+    messageText: `Your slot with ${teacherName} is confirmed!`,
+    details: `Meeting Reference: ${bookingId}\nStudent: ${student.name}\nTeacher: ${teacherName}\nDate: ${date}\nTime Slot: ${time}\n\nWe look forward to discussing your child's progress!`
+  }).catch(err => console.error("PTM booking email notification error:", err));
+
+  return res.json({
+    success: true,
+    message: `Meeting successfully booked with ${teacherName} on ${date} at ${time}!`,
+    data: newBooking
+  });
+});
+
+// Submit Homework Completed Worksheet/Photo
+app.post("/api/parent/submit-homework", (req, res) => {
+  const { studentId, homeworkId, comments, imageBase64 } = req.body;
+  if (!studentId || !homeworkId) {
+    return res.status(400).json({ error: "Student ID and Homework ID are required" });
+  }
+
+  const student = db.students.find((s: any) => s.id === studentId);
+  if (!student) {
+    return res.status(404).json({ error: "Student record not found" });
+  }
+
+  const hw = db.homework.find((h: any) => h.id === homeworkId);
+  if (!hw) {
+    return res.status(404).json({ error: "Homework assignment not found" });
+  }
+
+  const submissionId = `subm-${Date.now()}`;
+  const newSubmission = {
+    id: submissionId,
+    studentId,
+    studentName: student.name,
+    homeworkId,
+    homeworkTitle: hw.title,
+    comments: comments || "",
+    imageUrl: imageBase64 || "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80",
+    submittedAt: new Date().toISOString().split("T")[0]
+  };
+
+  if (!db.homeworkSubmissions) db.homeworkSubmissions = [];
+  db.homeworkSubmissions.unshift(newSubmission);
+
+  return res.json({
+    success: true,
+    message: `Worksheet response submitted successfully for Ethan! Outstanding progress.`,
+    data: newSubmission
+  });
+});
+
+// Update Push Notification Preferences
+app.post("/api/parent/push-preferences", (req, res) => {
+  const { email, alertsEnabled, categoryPreferences } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+
+  if (!db.pushSettings) db.pushSettings = {};
+  db.pushSettings[email.toLowerCase()] = {
+    alertsEnabled: !!alertsEnabled,
+    categoryPreferences: categoryPreferences || { homework: true, attendance: true, fees: true, newsletter: true },
+    updatedAt: new Date().toISOString()
+  };
+
+  return res.json({
+    success: true,
+    message: "Notification preferences updated! Handshake established with browser push registry.",
+    data: db.pushSettings[email.toLowerCase()]
   });
 });
 

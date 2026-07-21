@@ -9,36 +9,21 @@ export default function FacilitiesSection() {
       icon: "🤸",
       desc: "An fully air-conditioned active play environment lined with medical-grade, shock-absorbent safety foam blocks. Includes slides, sensory tubes, and climbing grids.",
       tag: "100% Sanitized Daily",
+      image: "https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "Interactive Reading Corner",
       icon: "📚",
       desc: "A warm, quiet library corner loaded with age-appropriate picture books, talking phonetic devices, and beanbags designed to instil early reading values.",
       tag: "Early Phonics Focus",
-    },
-    {
-      title: "Green Backyard Garden Playground",
-      icon: "🌳",
-      desc: "Secure organic gardens where kids can feel actual grass, plant flowers, observe butterflies, and play sensory games safely in natural ventilation.",
-      tag: "Physical Development",
-    },
-    {
-      title: "Kid Splash Pool & Water Play",
-      icon: "🏊",
-      desc: "An extremely safe, shallow water splash playpool. Designed to trigger early coordination with floating measuring cups, waterwheels, and water jets.",
-      tag: "Tactile Sensory Coordination",
-    },
-    {
-      title: "Sanitized Kids Safe Pantry",
-      icon: "🍎",
-      desc: "Highly hygienic pantry where our CPR-certified culinary staff prep warm, healthy organic baby-meals. Free from refined sugars, rich in protein.",
-      tag: "Organic Nutritional Diet",
+      image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "Fully-Equipped Sick Bay",
       icon: "🩺",
       desc: "A soft, reassuring medical rest corner equipped with child-sized beds, temperature grids, nebulizers, and pediatric first-aid supplies.",
       tag: "Pediatric First Aid Ready",
+      image: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80"
     }
   ];
 
@@ -65,11 +50,27 @@ export default function FacilitiesSection() {
             <motion.div
               whileHover={{ y: -5 }}
               key={idx}
-              className="bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 p-6 rounded-3xl flex flex-col justify-between shadow-xs hover:shadow-md transition-all group hover:bg-white dark:hover:bg-slate-850 hover:border-yellow-250 dark:hover:border-yellow-400/40"
+              className="bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 p-5 rounded-3xl flex flex-col justify-between shadow-xs hover:shadow-md transition-all group hover:bg-white dark:hover:bg-slate-850 hover:border-yellow-250 dark:hover:border-yellow-400/40 overflow-hidden"
             >
               <div className="space-y-4">
+                {/* Photo container */}
+                {fac.image && (
+                  <div className="w-full aspect-video rounded-2xl overflow-hidden relative bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-800">
+                    <img
+                      src={fac.image}
+                      alt={fac.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                    <div className="absolute bottom-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xs w-9 h-9 rounded-xl flex items-center justify-center shadow-xs">
+                      <span className="text-xl leading-none">{fac.icon}</span>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex justify-between items-center">
-                  <span className="text-4xl leading-none">{fac.icon}</span>
+                  {!fac.image && <span className="text-4xl leading-none">{fac.icon}</span>}
                   <span className="bg-orange-50 dark:bg-orange-950/40 border border-orange-100 dark:border-orange-900/30 text-orange-700 dark:text-orange-300 text-[9px] font-bold font-mono px-2.5 py-1 rounded-full uppercase">
                     {fac.tag}
                   </span>
@@ -85,10 +86,6 @@ export default function FacilitiesSection() {
                 </div>
               </div>
 
-              <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-1.5 text-[11px] text-slate-400 dark:text-slate-500 font-sans font-bold">
-                <Check size={12} className="text-emerald-500 shrink-0" />
-                <span>Standard compliance check passed</span>
-              </div>
             </motion.div>
           ))}
         </div>
@@ -102,7 +99,7 @@ export default function FacilitiesSection() {
             <div>
               <h4 className="font-display font-extrabold text-base text-white">Our 3-Fold Safety Guarantee</h4>
               <p className="text-xs text-slate-400 mt-1 font-sans">
-                Triple security: Live app-linked CCTV + Magnetic safety gates + CPR-certified teachers on guard.
+                Triple security: Admin CCTV monitoring + Magnetic safety gates + CPR-certified teachers on guard.
               </p>
             </div>
           </div>

@@ -28,7 +28,7 @@ export default function Chatbot() {
     "What are the admission fees?",
     "Tell me about the Daycare program",
     "How can I book a school tour?",
-    "Is CCTV access available for parents?",
+    "Is CCTV access restricted to Admin only?",
   ];
 
   useEffect(() => {

@@ -7,6 +7,7 @@ import FacilitiesSection from "./components/FacilitiesSection";
 import GallerySection from "./components/GallerySection";
 import AdmissionsSection from "./components/AdmissionsSection";
 import ContactSection from "./components/ContactSection";
+import FAQSection from "./components/FAQSection";
 import BlogSection from "./components/BlogSection";
 import Testimonials from "./components/Testimonials";
 import Footer from "./components/Footer";
@@ -15,11 +16,22 @@ import VoiceAssistant from "./components/VoiceAssistant";
 import Dashboards from "./components/Dashboards";
 import Playroom from "./components/Playroom";
 import BrochureModal from "./components/BrochureModal";
+import WelcomeAnimation from "./components/WelcomeAnimation";
 import { MessageSquare, Volume2, Sparkles, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import ButterflyCursor from "./components/effects/ButterflyCursor";
+import FlyingBees from "./components/effects/FlyingBees";
+import Fireflies from "./components/effects/Fireflies";
+import ConfettiTrigger from "./components/effects/ConfettiTrigger";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>("home");
+  const [isWelcomeActive, setIsWelcomeActive] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("hasSeenWelcome") !== "true";
+    }
+    return true;
+  });
   const [admissionFormType, setAdmissionFormType] = useState<"admission" | "tour">("admission");
   const [selectedEnquiryProgram, setSelectedEnquiryProgram] = useState<string>("Nursery");
   const [isBrochureOpen, setIsBrochureOpen] = useState(false);
@@ -51,6 +63,7 @@ export default function App() {
   // Floating AI assist states
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [isVoiceOpen, setIsVoiceOpen] = useState(false);
+  const [isConfettiActive, setIsConfettiActive] = useState(false);
 
   // Scroll to top on tab change
   useEffect(() => {
@@ -71,11 +84,42 @@ export default function App() {
 
   const handleAdmissionOrTourSuccess = () => {
     console.log("Admission or tour successfully registered!");
+    setIsConfettiActive(true);
   };
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans flex flex-col justify-between selection:bg-yellow-200 dark:selection:bg-yellow-800 selection:text-slate-900 dark:selection:text-yellow-100 transition-colors duration-350">
       
+      {/* Ambient Interactive Particle Overlays */}
+      {theme === "dark" && <Fireflies />}
+      {activeTab === "home" && <ButterflyCursor />}
+      {activeTab === "home" && <FlyingBees />}
+      <ConfettiTrigger active={isConfettiActive} onComplete={() => setIsConfettiActive(false)} />
+      
+      {/* Magical Welcome Butterfly Animation */}
+      <AnimatePresence mode="wait">
+        {isWelcomeActive && (
+          <motion.div
+            key="welcome-animation"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+            className="fixed inset-0 z-[100]"
+          >
+            <WelcomeAnimation
+              onComplete={() => {
+                setTimeout(() => {
+                  setIsWelcomeActive(false);
+                }, 0);
+                if (typeof window !== "undefined") {
+                  sessionStorage.setItem("hasSeenWelcome", "true");
+                }
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Elegant Full-screen Theme Transition Overlay */}
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
@@ -121,6 +165,7 @@ export default function App() {
               <Testimonials />
               <GallerySection />
               <BlogSection />
+              <FAQSection />
               <ContactSection />
             </motion.div>
           )}
@@ -215,6 +260,18 @@ export default function App() {
             </motion.div>
           )}
 
+          {activeTab === "faq" && (
+            <motion.div
+              key="faq-page"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3 }}
+            >
+              <FAQSection />
+            </motion.div>
+          )}
+
           {activeTab === "contact" && (
             <motion.div
               key="contact-page"
@@ -260,18 +317,6 @@ export default function App() {
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
         {/* Voice Assistant Toggler */}
         <div className="relative flex justify-end">
-          <AnimatePresence>
-            {isVoiceOpen && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                className="absolute bottom-16 right-0 w-80 sm:w-96"
-              >
-                <VoiceAssistant onClose={() => setIsVoiceOpen(false)} />
-              </motion.div>
-            )}
-          </AnimatePresence>
           <button
             id="btn-voice-float-trigger"
             onClick={() => {
@@ -338,6 +383,40 @@ export default function App() {
         onApplyClick={() => handleEnquireProgram("Nursery")}
         onBookTourClick={handleBookTour}
       />
+
+      {/* 24/7 AI Voice Receptionist Modal */}
+      <AnimatePresence>
+        {isVoiceOpen && (
+          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 z-[60] overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl"
+            >
+              <VoiceAssistant onClose={() => setIsVoiceOpen(false)} />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Left Magical Replay Button */}
+      {!isWelcomeActive && (
+        <div className="fixed bottom-6 left-6 z-40">
+          <motion.button
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 200, delay: 0.5 }}
+            onClick={() => setIsWelcomeActive(true)}
+            className="bg-white/95 dark:bg-slate-900/95 hover:bg-yellow-400 dark:hover:bg-yellow-400 backdrop-blur-md border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-slate-950 p-3 rounded-full shadow-2xl transition-all hover:scale-110 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+            title="Replay Welcome Magic 🦋"
+          >
+            <span className="text-base">🦋</span>
+            <span className="text-[10px] font-extrabold tracking-wider pr-1.5 hidden sm:inline">REPLAY MAGIC</span>
+          </motion.button>
+        </div>
+      )}
 
     </div>
   );

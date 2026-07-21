@@ -1,6 +1,8 @@
 import React from "react";
 import { Sparkles, Calendar, ArrowRight, ShieldCheck, Heart, Award } from "lucide-react";
 import { motion } from "motion/react";
+import InteractiveHive from "./effects/InteractiveHive";
+import BloomingFlowers from "./effects/BloomingFlowers";
 
 interface HeroProps {
   onBookTourClick: () => void;
@@ -14,6 +16,9 @@ export default function Hero({ onBookTourClick, onExploreProgramsClick }: HeroPr
       <div className="absolute top-1/4 left-1/10 w-72 h-72 bg-yellow-200/40 dark:bg-yellow-500/10 rounded-full filter blur-3xl animate-blob-bounce pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/10 w-96 h-96 bg-sky-200/40 dark:bg-sky-500/10 rounded-full filter blur-3xl animate-blob-bounce animation-delay-2000 pointer-events-none" />
       <div className="absolute top-1/3 right-1/3 w-80 h-80 bg-orange-200/20 dark:bg-orange-500/5 rounded-full filter blur-3xl animate-blob-bounce animation-delay-4000 pointer-events-none" />
+
+      {/* Interactive Honeycomb Hive Background */}
+      <InteractiveHive />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         <div className="grid lg:grid-cols-12 gap-12 items-center">
@@ -59,16 +64,8 @@ export default function Hero({ onBookTourClick, onExploreProgramsClick }: HeroPr
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="grid sm:grid-cols-3 gap-4 pt-2 text-left max-w-xl mx-auto lg:mx-0"
+              className="grid sm:grid-cols-2 gap-4 pt-2 text-left max-w-xl mx-auto lg:mx-0"
             >
-              <div className="flex gap-2.5 items-start bg-white/70 dark:bg-slate-900/50 backdrop-blur-xs p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
-                <ShieldCheck className="text-yellow-500 shrink-0 mt-0.5" size={16} />
-                <div>
-                  <h5 className="text-xs font-extrabold text-slate-850 dark:text-slate-200">Live CCTV Access</h5>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Full parent transparency</p>
-                </div>
-              </div>
-
               <div className="flex gap-2.5 items-start bg-white/70 dark:bg-slate-900/50 backdrop-blur-xs p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
                 <Heart className="text-orange-500 shrink-0 mt-0.5" size={16} />
                 <div>
@@ -194,6 +191,15 @@ export default function Hero({ onBookTourClick, onExploreProgramsClick }: HeroPr
           </div>
 
         </div>
+
+        {/* Ambient Decorative Blooming Flowers */}
+        <div className="absolute bottom-4 left-6 hidden lg:block">
+          <BloomingFlowers color="#f43f5e" size={72} />
+        </div>
+        <div className="absolute bottom-4 right-12 hidden lg:block">
+          <BloomingFlowers color="#fb923c" size={64} />
+        </div>
+
       </div>
     </section>
   );
